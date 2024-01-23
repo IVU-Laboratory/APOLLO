@@ -1,6 +1,6 @@
 AntiPhish-LLM is a tool written in Python 3.10.12 and powered by GPT-4-turbo ([gpt-4-1106-preview]([url](https://help.openai.com/en/articles/8555510-gpt-4-turbo))) to:
-- classify an email as phishing or legitimate and
-- generate an explanation for the user in case of a phishing email.
+- **classify** an email as **phishing** or legitimate, and
+- **generate an explanation** for the user in the case of a phishing email.
 
 AntiPhish-LLM takes in input an email in _.eml format_ and, thanks to the preprocessor module, removes any HTML tag and saves information about the links in the email (as done in [1]). To overcome the knowledge cut-off of GPT-4, we enriched the link with online information. Specifically, we query the VirusTotal and BlackListChecker APIs to see if the link is malicious, and BigDataCloud to see the server location, useful for the explanation phase. Finally, the email link and this additional information are used to fill in two templates of GPT-4 prompts, which allow AntiPhish-LLM to classify the email and generate the explanation. 
 
