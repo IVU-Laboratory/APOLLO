@@ -15,9 +15,9 @@ This tool was used in the study "Can LLMs help protect users from phishing attac
 
 ### Supplementary material
 
-In the file emails+warnings.zip are stored the emails (in .html format) to which users in the study "Can LLMs help protect users from phishing attacks? An exploratory study" were exposed, together with the warnings shown (in .png format). Emails are named EX.html, and warnings are named WX.png, where X is the experimental condition (from 1 to 4).
+In the file _emails+warnings.zip_ are stored the emails (in .html format) to which users in the study "Can LLMs help protect users from phishing attacks? An exploratory study" were exposed, together with the warnings shown (in .png format). Warnings are named WX.png, where X is the experimental condition (from 1 to 4); emails name include the warning name to match them with the warnings that were shown together.
 
-"Stat test details.xls" contains statistical data about the results of the study. 
+_Stat test details.xls_ contains statistical data about the results of the study. 
 
 ### References
 
