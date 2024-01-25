@@ -13,6 +13,14 @@ The core of the tool is the set of the GPT-4 prompts, thus we devoted particular
 
 This tool was used in the study "Can LLMs help protect users from phishing attacks? An exploratory study", submitted for the CHI'24 conference, Late-Breaking Work track.
 
+### Supplementary material
+
+In the file emails+warnings.zip are stored the emails (in .html format) to which users in the study "Can LLMs help protect users from phishing attacks? An exploratory study" were exposed, together with the warnings shown (in .png format). Emails are named EX.html, and warnings are named WX.png, where X is the experimental condition (from 1 to 4).
+
+"Stat test details.xls" contains statistical data about the results of the study. 
+
+### References
+
 [1] Misra, K. and Rayz, J. T.. 2022. LMs go Phishing: Adapting Pre-trained Language Models to Detect Phishing Email.
 
 [2] Liu, P., Yuan, Q., Fu, J., Jiang, Z., Hayashi, H. and Neubig, G. 2023. Pre-train, Prompt, and Predict: A Systematic Survey of Prompting Methods in Natural Language Processing.ACM Comput. Surv., 55, 9, Article 195. https://doi.org/10.1145/3560815
