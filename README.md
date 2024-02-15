@@ -17,7 +17,9 @@ This tool was used in the study "Can LLMs help protect users from phishing attac
 
 In the file _emails+warnings.zip_ are stored the emails (in .html format) to which users in the study "Can LLMs help protect users from phishing attacks? An exploratory study" were exposed, together with the warnings shown (in .png format). Warnings are named WX.png, where X is the experimental condition (from 1 to 4); emails name include the warning name to match them with the warnings that were shown together.
 
-_Stat test details.xls_ contains statistical data about the results of the study. 
+The "_Baseline Comparison - Stat test details.xls_" file contains the results of the statistical comparison performed between our 4 experimental conditions (W1-W4) and the 4 baselines (manual explanation + chrome + edge + firefox).
+
+The "_Experimental Conditions - Stat details.xlsx_" file contains 2 sheets with: 1) the descriptive statistical details of the 4 experimental conditions (average and standard deviation of W1-W4) and 2) the results of the friedman test comparing the 4 experimental conditions pairwise.
 
 ### References
 
