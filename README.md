@@ -2,6 +2,10 @@ AntiPhish-LLM is a tool written in Python 3.10.12 and powered by GPT-4-turbo ([g
 - **classify** an email as **phishing** or legitimate, and
 - **generate an explanation** for the user in the case of a phishing email.
 
+The tool is accessible by using the _main.py_ script and is composed of three modules: _preprocessor.py_ (which preprocesses emails), _url_enricher.py_ (which gathers online information about any URLs in emails), and _llm_prompter.py_ (which interacts with GPT-4).
+
+A demo of the tool is also available as a Jupyter notebook in the file _AntiPhish_LLM.ipynb_.
+
 AntiPhish-LLM takes in input an email in _.eml format_ and, thanks to the preprocessor module, removes any HTML tag and saves information about the links in the email (as done in [1]). To overcome the knowledge cut-off of GPT-4, we enriched the link with online information. Specifically, we query the VirusTotal and BlackListChecker APIs to see if the link is malicious, and BigDataCloud to see the server location, useful for the explanation phase. Finally, the email link and this additional information are used to fill in two templates of GPT-4 prompts, which allow AntiPhish-LLM to classify the email and generate the explanation. 
 
 The core of the tool is the set of the GPT-4 prompts, thus we devoted particular care to manually designing and iteratively refining them according to the best practices of prompt-engineering [2-4]. Notably, we followed a few-shot prompting approach, as also suggested by OpenAI [4]. The generated explanations follow the structure defined in [5]: “Feature description + Hazard Explanation + Consequences of not complying with the warning”. This structure is grounded on warning theory for the design of warning messages [6]. Moreover, the generated explanations revolve around a set of email features that are valuable for users in making decisions regarding phishing content [5,7] i.e., are:
@@ -10,8 +14,6 @@ The core of the tool is the set of the GPT-4 prompts, thus we devoted particular
 - (2) the URL is an IP address; 
 - (3) Mismatch between the displayed and actual link; 
 - (4) the URL points to a very young domain.
-
-This tool was used in the study "Can LLMs help protect users from phishing attacks? An exploratory study", submitted for the CHI'24 conference, Late-Breaking Work track.
 
 ### Supplementary material
 
