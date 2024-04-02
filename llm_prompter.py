@@ -4,11 +4,10 @@ import os
 
 SEED = 42
 MODEL = "gpt-4-1106-preview"  # "gpt-3.5-turbo-1106"
-TEMPERATURE = 0
+TEMPERATURE = 0.0001
 
 
-def classify_email(email_input, feature_to_explain=None, url_info=None, explanations_min=3, explanations_max=6,
-                   model=MODEL):
+def classify_email(email_input, feature_to_explain=None, url_info=None, explanations_min=3, explanations_max=6):
     # Initial Prompt
     messages = [
         {"role": "system", "content": f'''You are a cybersecurity and human-computer interaction expert that has the goal to detect
