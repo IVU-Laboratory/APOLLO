@@ -11,7 +11,9 @@ def get_fullhostname(url):
     re_match = re.search(r"^(\w+:\/\/)?(?:[^@\/\n]+@)?((?:www\.)?[^:\/?\n]+)\:?(\d*)(\/[^?]*)?(\?.*)?", url, re.I)
     if re_match is not None:
         re_match = re_match.groups()
-        full_hostname = re_match[0] + re_match[1]
+        protocol = re_match[0] or ""
+        domain = re_match[1] or ""
+        full_hostname = protocol + domain
         return full_hostname
     return url
 
@@ -20,14 +22,18 @@ def get_ip_addr(url):
     # remove protocol from URL (if exists)
     match_result = re.match(r"(?:.*\:\/\/)([^\/]*)", url)
     if match_result is not None:
-      match_groups = match_result.groups()
-      if len(match_groups) > 0:
-        url = match_groups[0]
+        match_groups = match_result.groups()
+        if len(match_groups) > 0:
+            url = match_groups[0]
     # dns lookup
-    a = dns.resolver.resolve_name(url, family=socket.AF_INET)
-    addrs = a.addresses()
-    for addr in addrs:
-      return addr
+    try:
+        a = dns.resolver.resolve_name(url, family=socket.AF_INET)
+        addrs = a.addresses()
+        for addr in addrs:
+            return addr
+    except:
+        print("Cannot resolve " + url)
+        return ""
 
 
 ## VirusTotal
@@ -43,18 +49,20 @@ def get_virustotal_data(url):
     base_64_url = base_64_url.rstrip('=')  # remove the trailing padding chars '='
     request_url = api_base_url + base_64_url
 
-    response = requests.get(request_url, headers=headers) # Make the HTTP GET request
-
-    # Check for a successful response (HTTP status code 200)
-    if response.status_code == 200:
-        # Access the JSON response
-        result = response.json()
-        vt_data = result['data']['attributes']['last_analysis_stats']  # contains the votes for the scan {"harmless" : w, "undetected": x, "suspicious": y, "malicious": z}
-    else:
-        print(f"VirusTotal Request failed with status code: {response.status_code}")
-        vt_data = None
-    response.close() # Close the response
-    return vt_data
+    try:
+        response = requests.get(request_url, headers=headers) # Make the HTTP GET request
+        # Check for a successful response (HTTP status code 200)
+        if response.status_code == 200:
+            # Access the JSON response
+            result = response.json()
+            vt_data = result['data']['attributes']['last_analysis_stats']  # contains the votes for the scan {"harmless" : w, "undetected": x, "suspicious": y, "malicious": z}
+        else:
+            print(f"VirusTotal Request failed with status code: {response.status_code}")
+            vt_data = "Unknown"
+        response.close() # Close the response
+        return vt_data
+    except:
+        return "Unknown"
 
 
 ## Blackist Checker API
@@ -65,19 +73,23 @@ def get_blacklists_data(url):
         'authorization': "Basic username" + blacklist_api_key
     }
     request_url = api_base_url + "check/" + url
-    response = requests.get(request_url, headers=headers) # Make the HTTP GET request
 
-    # Check for a successful response (HTTP status code 200)
-    if response.status_code == 200:
-        # Access the JSON response
-        result = response.json()
-    else:
-        print(f"BlacklistChecker Request failed with status code: {response.status_code}")
-        result = {"detections": 0}
-    n_blacklists_found = result["detections"]  # The detections field simply carries the number of blacklists in which the domain appeared
+    try:
+        response = requests.get(request_url, headers=headers) # Make the HTTP GET request
 
-    response.close() # Close the response
-    return n_blacklists_found
+        # Check for a successful response (HTTP status code 200)
+        if response.status_code == 200:
+            # Access the JSON response
+            result = response.json()
+        else:
+            print(f"BlacklistChecker Request failed with status code: {response.status_code}")
+            result = {"detections": "Unknown"}
+        n_blacklists_found = result["detections"]  # The detections field simply carries the number of blacklists in which the domain appeared
+
+        response.close() # Close the response
+        return n_blacklists_found
+    except:
+        return "Unknown"
 
 
 ## BigDataCloud API (get location of IP address)
@@ -91,25 +103,28 @@ def get_dns_info(url):
         "key": dns_api_key
     }
     request_url = api_base_url
-    response = requests.get(request_url, params=get_params) # Make the HTTP GET request
+    try:
+        response = requests.get(request_url, params=get_params) # Make the HTTP GET request
 
-    # Check for a successful response (HTTP status code 200)
-    if response.status_code == 200:
-        # Access the JSON response
-        result = response.json()
-        # print (result)
-    else:
-        print(f"BigDataCloud Request failed with status code: {response.status_code}")
-        result = {"country": None}
-    country = result["country"]
-    if country is not None:
-        # countryName = country["name"]  regionName = country["wbRegion"]["value"]
-        countryID = country['isoAlpha3']  # country['isoName']
-    else:
-        countryID = "unknown"
-        # countryName = "unknown"  regionName = "unknown"
-    response.close() # Close the response
-    return countryID # countryName, regionName
+        # Check for a successful response (HTTP status code 200)
+        if response.status_code == 200:
+            # Access the JSON response
+            result = response.json()
+            # print (result)
+        else:
+            print(f"BigDataCloud Request failed with status code: {response.status_code}")
+            result = {"country": "Unknown"}
+        country = result["country"]
+        if country is not None:
+            # countryName = country["name"]  regionName = country["wbRegion"]["value"]
+            countryID = country['isoAlpha3']  # country['isoName']
+        else:
+            countryID = "unknown"
+            # countryName = "unknown"  regionName = "unknown"
+        response.close() # Close the response
+        return countryID # countryName, regionName
+    except:
+        return "Unknown"
 
 
 def get_url_info(url_to_analyze, string_out=False):
@@ -119,9 +134,9 @@ def get_url_info(url_to_analyze, string_out=False):
     domain_location = get_dns_info(url)
 
     url_info = {
-        'Server location' : domain_location,
-        'VirusTotal scan' : vt_data,
-        'Blacklists' : n_blacklists_found
+        'Server location': domain_location,
+        'VirusTotal scan': vt_data,
+        'Blacklists': n_blacklists_found
     }
     if string_out:
         return str(url_info)

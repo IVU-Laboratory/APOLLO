@@ -7,7 +7,7 @@ MODEL = "gpt-4-1106-preview"  # "gpt-3.5-turbo-1106"
 TEMPERATURE = 0.0001
 
 
-def classify_email(email_input, feature_to_explain=None, url_info=None, explanations_min=3, explanations_max=6):
+def classify_email(email_input, feature_to_explain=None, url_info=None, explanations_min=3, explanations_max=6, model=MODEL):
     # Initial Prompt
     messages = [
         {"role": "system", "content": f'''You are a cybersecurity and human-computer interaction expert that has the goal to detect
@@ -62,7 +62,7 @@ def classify_email(email_input, feature_to_explain=None, url_info=None, explanat
     messages.append({"role": "user", "content": email_prompt})
     # Get the classification response
     response = openai.chat.completions.create(
-        model=MODEL,
+        model=model,
         seed=SEED,
         temperature=TEMPERATURE,
         messages=messages,
@@ -141,3 +141,76 @@ def classify_email(email_input, feature_to_explain=None, url_info=None, explanat
 
 def set_api_key():
     openai.api_key = os.getenv('OPENAI_API')
+
+
+def classify_email_minimal(email_input, url_info=None, model=MODEL):
+    messages = [
+        {"role": "system", "content": f'''You are a cybersecurity and human-computer interaction expert that has the goal to detect
+           if an email is legitimate or phishing and help the user understand why a specific email is dangerous (or genuine), in order
+           to make more informed decisions.
+           The user will submit the email (headers + subject + body) optionally accompanied by information of the URLs in the email as:
+           - server location;
+           - VirusTotal scans reporting the number of scanners that detected the URL as harmless, undetected, suspicious, malicious;
+           - number of blacklists in which the linked domain was found.
+
+           Your goal is to output a JSON object containing:
+           - The classification result (label).
+           - The probability in percentage of the email being phishing (0%=email is surely legitimate, 100%=email is surely phishing) (phishing_probability).
+
+           Desired format:
+           label: <phishing/legit>
+           phishing_probability: <0-100%>'''
+         }
+    ]
+    # User input (email)
+    headers = str(email_input["headers"])
+    subject = email_input["subject"]
+    body = email_input["body"]
+    email_prompt = f'''Email:
+             """
+             [HEADERS]
+               {headers}
+             [\HEADERS]
+             [SUBJECT] {subject} [\SUBJECT]
+             [BODY]
+             {body}
+             [\BODY]
+             """
+             '''
+    # Add the url_info if it exists
+    if url_info is not None:
+        email_prompt += f"""
+
+             ######
+
+             URL Information:
+             {str(url_info)}"""
+
+    messages.append({"role": "user", "content": email_prompt})
+    try:
+        # Get the classification response
+        response = openai.chat.completions.create(
+            model=model,
+            seed=SEED,
+            temperature=TEMPERATURE,
+            messages=messages,
+            response_format={"type": "json_object"}
+        )
+        classification_response = response.choices[0].message.content
+        # Try getting the JSON object from the response
+    except:
+        print("Error in making the request to OpenAI")
+        return "", None
+    try:
+        classification_response = json.loads(classification_response)
+    except:
+        print("Invalid JSON format in the response")
+        return classification_response, None
+
+    if "label" in classification_response and "phishing_probability" in classification_response:
+        predicted_label = classification_response['label']
+        probability = classification_response['phishing_probability']
+        return predicted_label, probability
+    else:
+        print("The response does not contain the predicted label (phishing/non-phishing)")
+        return classification_response, ""
