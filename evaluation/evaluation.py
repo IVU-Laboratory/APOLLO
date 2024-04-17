@@ -9,11 +9,10 @@ import csv
 GPT_MODEL = "gpt-4-1106-preview"  # "gpt-3.5-turbo-0613"
 
 # 1726 legitimate emails
-# 1004 phishing emails
 
 # With URL analysis : we covered from 0 to 59
-START_INDEX = 2730
-END_INDEX = START_INDEX + 5
+START_INDEX = 2980
+END_INDEX = START_INDEX + 250
 
 
 def main():
