@@ -8,8 +8,12 @@ import csv
 
 GPT_MODEL = "gpt-4-1106-preview"  # "gpt-3.5-turbo-0613"
 
-START_INDEX = 1731
-END_INDEX = START_INDEX + 1
+# 1726 legitimate emails
+# 1004 phishing emails
+
+# With URL analysis : we covered from 0 to 59
+START_INDEX = 2730
+END_INDEX = START_INDEX + 5
 
 
 def main():
@@ -34,13 +38,13 @@ def main():
     for mail_id in range(0, len(emails_df)):
         e = emails_df.iloc[mail_id]
         body, urls = preprocessor.preprocessURLsPlainText(e["body"])
-        headers = "To: " + e["receiver"] + "\nFrom: " + e["sender"] + "\nDate: " + e["date"]
+        headers = "To: " + str(e["receiver"]) + "\nFrom: " + str(e["sender"]) + "\nDate: " + str(e["date"])
         emails_df.iloc[mail_id, emails_df.columns.get_loc("body")] = body
         emails_df.iloc[mail_id, emails_df.columns.get_loc("urls")] = ' '.join(urls)  # put the list into a single string
         emails_df.iloc[mail_id, emails_df.columns.get_loc("headers")] = headers
 
     print("Classifying emails...")
-    for enrich_url in [True, False]:
+    for enrich_url in [False]:
         print("Enrich URL = " + ("True" if enrich_url else "False"))
         for mail_id in range(0, len(emails_df)):
             mail = emails_df.iloc[mail_id]
@@ -61,13 +65,13 @@ def main():
                 url_info = None
 
             # Call GPT-4 for email phishing classification (automatic feature detection)
-            print("-- Classifying with GPT:")
+            # print("-- Classifying with GPT:")
             # y_label, y_prob = None, None
             y_label, y_prob = llm_prompter.classify_email_minimal(mail, url_info, model=GPT_MODEL)
             if y_prob is None:  # then there's an error in the response
                 continue
             result = {"mail_id": mail["mail_id"], "label": y_label, "prob": y_prob, "true_label": str(mail["label"])}
-            print(result)
+            print(f"{result['mail_id']},{result['label']},{result['prob']},{result['true_label']}")
             if enrich_url:
                 y_results_url.append(result)
             else:
