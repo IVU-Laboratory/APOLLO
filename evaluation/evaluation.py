@@ -8,11 +8,16 @@ import csv
 
 GPT_MODEL = "gpt-4-1106-preview"  # "gpt-3.5-turbo-0613"
 
-# 1726 legitimate emails
+# No URL
+# End index legit = 1726
+# End index phishing = 3230
 
-# With URL analysis : we covered from 0 to 59
-START_INDEX = 2980
-END_INDEX = START_INDEX + 250
+# With URL
+# End index legit = 500
+# End index phishing = 2250
+
+START_INDEX = 2250
+END_INDEX = START_INDEX + 50
 
 
 def main():
@@ -43,7 +48,7 @@ def main():
         emails_df.iloc[mail_id, emails_df.columns.get_loc("headers")] = headers
 
     print("Classifying emails...")
-    for enrich_url in [False]:
+    for enrich_url in [True]:
         print("Enrich URL = " + ("True" if enrich_url else "False"))
         for mail_id in range(0, len(emails_df)):
             mail = emails_df.iloc[mail_id]
@@ -53,7 +58,7 @@ def main():
             if enrich_url:
                 if len(mail_urls) == 0:  # Then the result is already stored in the no_url counterpart
                     # print([d for d in y_results_no_url if d['mail_id'] == mail_id])
-                    print("Already computed")
+                    print("No URL, skipping email...")
                     continue
                 else:
                     # Call remote API to gather online URL information

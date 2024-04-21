@@ -36,7 +36,7 @@ def get_ip_addr(url):
         return ""
 
 
-## VirusTotal
+# VirusTotal
 def get_virustotal_data(url):
     api_base_url = 'https://www.virustotal.com/api/v3/urls/'
     vt_api_key = os.getenv("VT_API")  # VirusTotal API key - https://www.virustotal.com/gui/home/upload
@@ -65,17 +65,13 @@ def get_virustotal_data(url):
         return "Unknown"
 
 
-## Blackist Checker API
+# Blackist Checker API
 def get_blacklists_data(url):
     blacklist_api_key = os.getenv("BLACKLIST_API")  # Blacklist Checker API key - https://blacklistchecker.com/
     api_base_url = "https://api.blacklistchecker.com/"
-    headers = {
-        'authorization': "Basic username" + blacklist_api_key
-    }
     request_url = api_base_url + "check/" + url
-
     try:
-        response = requests.get(request_url, headers=headers) # Make the HTTP GET request
+        response = requests.get(request_url, auth=(blacklist_api_key, ""))  # Make the HTTP GET request
 
         # Check for a successful response (HTTP status code 200)
         if response.status_code == 200:
@@ -92,7 +88,7 @@ def get_blacklists_data(url):
         return "Unknown"
 
 
-## BigDataCloud API (get location of IP address)
+# BigDataCloud API (get location of IP address)
 def get_dns_info(url):
     dns_api_key = os.getenv("DNS_API")  # BigDataCloud API key - https://www.bigdatacloud.com/
     api_base_url = "https://api.bigdatacloud.net/data/country-by-ip"
