@@ -13,11 +13,11 @@ GPT_MODEL = "gpt-4-1106-preview"  # "gpt-3.5-turbo-0613"
 # End index phishing = 3230
 
 # With URL
-# End index legit = 500
-# End index phishing = 2250
+# End index legit = 735
+# End index phishing = 2750
 
-START_INDEX = 2250
-END_INDEX = START_INDEX + 50
+START_INDEX = 735
+END_INDEX = START_INDEX + 25
 
 
 def main():
@@ -97,3 +97,21 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def add_missing_records_to_no_url_enriched_file():
+    # Read the CSV files into pandas DataFrames
+    no_url_df = pd.read_csv("no_url_enriched.csv")
+    url_df = pd.read_csv("url_enriched.csv")
+
+    # Find mail_ids present in no_url_df but missing in url_df
+    missing_mail_ids = set(no_url_df['mail_id']) - set(url_df['mail_id'])
+
+    # Filter rows from no_url_df where mail_id is in missing_mail_ids
+    filtered_rows = no_url_df[no_url_df['mail_id'].isin(missing_mail_ids)]
+
+    # Append the filtered rows to url_df and write to a new file url_enriched.csv
+    url_df = url_df.append(filtered_rows)
+
+    # Write the updated DataFrame to a new CSV file
+    #url_df.to_csv("url_enriched.csv", index=False)

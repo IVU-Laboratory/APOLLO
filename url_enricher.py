@@ -7,7 +7,7 @@ import os
 
 
 def get_fullhostname(url):
-    # get the domain name from the URL (without the path)
+    # get the domain name from the URL (protocol + hostname, without the path)
     re_match = re.search(r"^(\w+:\/\/)?(?:[^@\/\n]+@)?((?:www\.)?[^:\/?\n]+)\:?(\d*)(\/[^?]*)?(\?.*)?", url, re.I)
     if re_match is not None:
         re_match = re_match.groups()
@@ -15,6 +15,16 @@ def get_fullhostname(url):
         domain = re_match[1] or ""
         full_hostname = protocol + domain
         return full_hostname
+    return url
+
+
+def get_hostname(url):
+    # get the domain name from the URL (without the path and the protocol)
+    re_match = re.search(r"^(\w+:\/\/)?(?:[^@\/\n]+@)?((?:www\.)?[^:\/?\n]+)\:?(\d*)(\/[^?]*)?(\?.*)?", url, re.I)
+    if re_match is not None:
+        re_match = re_match.groups()
+        domain = re_match[1] or ""
+        return domain
     return url
 
 
@@ -124,10 +134,11 @@ def get_dns_info(url):
 
 
 def get_url_info(url_to_analyze, string_out=False):
-    url = get_fullhostname(url_to_analyze) # gets the full host name (protocol + fqdn), without the URL path
-    vt_data = get_virustotal_data(url)
+    url_fullhostname = get_fullhostname(url_to_analyze) # gets the full host name (protocol + fqdn), without the URL path
+    url = get_hostname(url_to_analyze)
+    vt_data = get_virustotal_data(url_fullhostname)
+    domain_location = get_dns_info(url_fullhostname)
     n_blacklists_found = get_blacklists_data(url)
-    domain_location = get_dns_info(url)
 
     url_info = {
         'Server location': domain_location,
