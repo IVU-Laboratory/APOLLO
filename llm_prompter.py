@@ -1,10 +1,19 @@
 import openai
 import json
 import os
+import asyncio
+from g4f.client import Client
+from g4f.Provider import RetryProvider, Bing, Phind, FreeChatgpt, Liaobots, You, Llama
 
 SEED = 42
-MODEL = "gpt-4-1106-preview"  # "gpt-3.5-turbo-1106"
+MODEL = "gpt-4"  # "gpt-3.5-turbo-1106"
 TEMPERATURE = 0.0001
+
+# Set a global client for GPT4free
+asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+client = Client(
+    provider=RetryProvider([Bing, Phind, FreeChatgpt, Liaobots, You, Llama], shuffle=False)
+)
 
 
 def classify_email(email_input, feature_to_explain=None, url_info=None, explanations_min=3, explanations_max=6, model=MODEL):
@@ -61,7 +70,9 @@ def classify_email(email_input, feature_to_explain=None, url_info=None, explanat
 
     messages.append({"role": "user", "content": email_prompt})
     # Get the classification response
-    response = openai.chat.completions.create(
+
+    client = Client()
+    response = client.chat.completions.create(
         model=model,
         seed=SEED,
         temperature=TEMPERATURE,
@@ -125,13 +136,13 @@ def classify_email(email_input, feature_to_explain=None, url_info=None, explanat
               [description of the feature]. [hazard explanation]. [consequences of a successful attack].
               """}
                 )
-
-            response_2 = openai.chat.completions.create(
-                model=MODEL,
+            response_2 = client.chat.completions.create(
+                model=model,
                 seed=SEED,
                 temperature=TEMPERATURE,
                 messages=messages
             )
+            classification_response = response.choices[0].message.content
             explanation_response = response_2.choices[0].message.content
         return classification_response, explanation_response
     else:  # Error: response in wrong format
@@ -189,7 +200,7 @@ def classify_email_minimal(email_input, url_info=None, model=MODEL):
     messages.append({"role": "user", "content": email_prompt})
     try:
         # Get the classification response
-        response = openai.chat.completions.create(
+        response = client.chat.completions.create(
             model=model,
             seed=SEED,
             temperature=TEMPERATURE,
@@ -199,7 +210,7 @@ def classify_email_minimal(email_input, url_info=None, model=MODEL):
         classification_response = response.choices[0].message.content
         # Try getting the JSON object from the response
     except:
-        print("Error in making the request to OpenAI")
+        print("Error in making the request to the LLM")
         return "", None
     try:
         classification_response = json.loads(classification_response)

@@ -19,7 +19,7 @@ GPT_MODEL = "gpt-4-1106-preview"  # "gpt-3.5-turbo-0125"
 # End index phishing = 2750
 
 START_INDEX = 0
-END_INDEX = START_INDEX + 200
+END_INDEX = START_INDEX + 3
 ENRICH_URL = [False]
 
 
@@ -37,6 +37,7 @@ def main():
         df.drop_duplicates("body", inplace=True)
         emails_df = pd.concat([emails_df, df])
     emails_df["headers"] = ""  # add empty column
+    emails_df["urls_"] = ""  # add empty column
     emails_df["mail_id"] = range(0, len(emails_df))  # add a unique ID for each email
     emails_df = emails_df.iloc[START_INDEX:END_INDEX]
 
@@ -47,7 +48,7 @@ def main():
         body, urls = preprocessor.preprocessURLsPlainText(e["body"])
         headers = "To: " + str(e["receiver"]) + "\nFrom: " + str(e["sender"]) + "\nDate: " + str(e["date"])
         emails_df.iloc[mail_id, emails_df.columns.get_loc("body")] = body
-        emails_df.iloc[mail_id, emails_df.columns.get_loc("urls")] = " ".join(urls)  # put the list into a single string
+        emails_df.iloc[mail_id, emails_df.columns.get_loc("urls_")] = " ".join(urls)  # put the list into a single string
         emails_df.iloc[mail_id, emails_df.columns.get_loc("headers")] = headers
 
     print("Classifying emails...")
@@ -57,7 +58,7 @@ def main():
             mail = emails_df.iloc[mail_id]
             print("- Processing email " + str(mail["mail_id"]))
             # Get additional information about URLs in the email
-            mail_urls = [] if mail["urls"] == "" else mail["urls"].split(" ")  # explode the string into a list
+            mail_urls = [] if mail["urls"] == 0 else mail["urls_"].split(" ")  # explode the string into a list
             if enrich_url:
                 if len(mail_urls) == 0:  # Then the result is already stored in the no_url counterpart
                     # print([d for d in y_results_no_url if d['mail_id'] == mail_id])
@@ -74,7 +75,7 @@ def main():
             # Call GPT-4 for email phishing classification (automatic feature detection)
             # print("-- Classifying with GPT:")
             # y_label, y_prob = None, None
-            y_label, y_prob = llm_prompter.classify_email_minimal(mail, url_info, model=GPT_MODEL)
+            y_label, y_prob = llm_prompter.classify_email_minimal(mail, url_info)
             if y_prob is None:  # then there's an error in the response
                 continue
             result = {"mail_id": mail["mail_id"], "label": y_label, "prob": y_prob, "true_label": str(mail["label"])}
