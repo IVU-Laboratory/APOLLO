@@ -52,7 +52,7 @@ def get_virustotal_data(url):
     vt_api_key = os.getenv("VT_API")  # VirusTotal API key - https://www.virustotal.com/gui/home/upload
     # Headers with the API key
     headers = {
-        'x-apikey': vt_api_key,
+        'x-apikey': "02c720cb6e04487edb6384c18bb663da3667ca6e8f79925682d82e700f5ddae9",
     }
     base_64_url = base64.b64encode(url.encode('ascii')) # encode the url in base64 bytes
     base_64_url = base_64_url.decode("ascii")  # get the base64 string
@@ -134,7 +134,7 @@ def get_dns_info(url):
 
 
 def get_url_info(url_to_analyze, string_out=False):
-    url_fullhostname = get_fullhostname(url_to_analyze) # gets the full host name (protocol + fqdn), without the URL path
+    url_fullhostname = get_fullhostname(url_to_analyze)  # gets the full host name (protocol + fqdn), w/o the URL path
     url = get_hostname(url_to_analyze)
     vt_data = get_virustotal_data(url_fullhostname)
     domain_location = get_dns_info(url_fullhostname)
@@ -149,3 +149,10 @@ def get_url_info(url_to_analyze, string_out=False):
         return str(url_info)
     else:
         return url_info
+
+
+if __name__ == "__main__":
+    url = get_fullhostname("https://instagram.com")
+    print(url)
+    r = get_virustotal_data(url)
+    print(r)
