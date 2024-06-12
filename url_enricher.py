@@ -35,6 +35,10 @@ def get_ip_addr(url):
         match_groups = match_result.groups()
         if len(match_groups) > 0:
             url = match_groups[0]
+
+    # check if the url is already an IP address
+    if re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$", url):
+        return url
     # dns lookup
     try:
         a = dns.resolver.resolve_name(url, family=socket.AF_INET)
@@ -43,7 +47,7 @@ def get_ip_addr(url):
             return addr
     except:
         print("Cannot resolve " + url)
-        return ""
+        return None
 
 
 # VirusTotal
@@ -103,6 +107,8 @@ def get_dns_info(url):
     dns_api_key = os.getenv("DNS_API")  # BigDataCloud API key - https://www.bigdatacloud.com/
     api_base_url = "https://api.bigdatacloud.net/data/country-by-ip"
     ip_addr = get_ip_addr(url)
+    if ip_addr is None:
+        return "unknown"  # cannot resolve URL
 
     get_params = {
         "ip": ip_addr,
@@ -120,6 +126,8 @@ def get_dns_info(url):
         else:
             print(f"BigDataCloud Request failed with status code: {response.status_code}")
             result = {"country": "Unknown"}
+        response.close()  # Close the response
+
         country = result["country"]
         if country is not None:
             # countryName = country["name"]  regionName = country["wbRegion"]["value"]
@@ -127,10 +135,9 @@ def get_dns_info(url):
         else:
             countryID = "unknown"
             # countryName = "unknown"  regionName = "unknown"
-        response.close() # Close the response
-        return countryID # countryName, regionName
+        return countryID  # countryName, regionName
     except:
-        return "Unknown"
+        return "unknown"
 
 
 def get_url_info(url_to_analyze, string_out=False):

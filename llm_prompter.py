@@ -155,29 +155,29 @@ def set_api_key():
 
 
 def classify_email_minimal(email_input, url_info=None, model=MODEL):
-    messages = [
-        {"role": "system", "content": f'''You are a cybersecurity and human-computer interaction expert that has the goal to detect
+    email_prompt = '''You are a cybersecurity and human-computer interaction expert that has the goal to detect
            if an email is legitimate or phishing and help the user understand why a specific email is dangerous (or genuine), in order
            to make more informed decisions.
            The user will submit the email (headers + subject + body) optionally accompanied by information of the URLs in the email as:
            - server location;
            - VirusTotal scans reporting the number of scanners that detected the URL as harmless, undetected, suspicious, malicious;
-           - number of blacklists in which the linked domain was found.
-
+           - number of blacklists in which the linked domain was found.\n
            Your goal is to output a JSON object containing:
            - The classification result (label).
-           - The probability in percentage of the email being phishing (0%=email is surely legitimate, 100%=email is surely phishing) (phishing_probability).
-
+           - The probability in percentage of the email being phishing (0%=email is surely legitimate, 100%=email is surely phishing) (phishing_probability).\n
            Desired format:
-           label: <phishing/legit>
-           phishing_probability: <0-100%>'''
-         }
-    ]
+           {
+            label: <phishing/legit>
+            phishing_probability: <0-100%>
+           }\n
+           Answer with the JSON object exclusively.\n
+           '''
+
     # User input (email)
     headers = str(email_input["headers"])
     subject = email_input["subject"]
     body = email_input["body"]
-    email_prompt = f'''Email:
+    email_prompt += f'''\n\nEmail:\n
              """
              [HEADERS]
                {headers}
@@ -197,7 +197,7 @@ def classify_email_minimal(email_input, url_info=None, model=MODEL):
              URL Information:
              {str(url_info)}"""
 
-    messages.append({"role": "user", "content": email_prompt})
+    messages = [{"role": "user", "content": email_prompt}]
     try:
         # Get the classification response
         response = client.chat.completions.create(

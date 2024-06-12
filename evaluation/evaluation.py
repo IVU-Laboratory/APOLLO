@@ -18,8 +18,8 @@ GPT_MODEL = "gpt-4-1106-preview"  # "gpt-3.5-turbo-0125"
 # End index legit = 735
 # End index phishing = 2750
 
-START_INDEX = 0
-END_INDEX = START_INDEX + 3
+START_INDEX = 100
+END_INDEX = START_INDEX + 200
 ENRICH_URL = [False]
 
 
@@ -34,22 +34,10 @@ def main():
     # load emails
     for file_name in ["legit.csv", "phishing.csv"]:
         df = pd.read_csv(os.path.join('datasets', file_name), sep=";")
-        df.drop_duplicates("body", inplace=True)
         emails_df = pd.concat([emails_df, df])
-    emails_df["headers"] = ""  # add empty column
-    emails_df["urls_"] = ""  # add empty column
-    emails_df["mail_id"] = range(0, len(emails_df))  # add a unique ID for each email
-    emails_df = emails_df.iloc[START_INDEX:END_INDEX]
 
-    print("Preprocessing emails...")
-    # preprocess emails
-    for mail_id in range(0, len(emails_df)):
-        e = emails_df.iloc[mail_id]
-        body, urls = preprocessor.preprocessURLsPlainText(e["body"])
-        headers = "To: " + str(e["receiver"]) + "\nFrom: " + str(e["sender"]) + "\nDate: " + str(e["date"])
-        emails_df.iloc[mail_id, emails_df.columns.get_loc("body")] = body
-        emails_df.iloc[mail_id, emails_df.columns.get_loc("urls_")] = " ".join(urls)  # put the list into a single string
-        emails_df.iloc[mail_id, emails_df.columns.get_loc("headers")] = headers
+    # Get only emails in the specified range
+    emails_df = emails_df.iloc[START_INDEX:END_INDEX]
 
     print("Classifying emails...")
     for enrich_url in ENRICH_URL:
