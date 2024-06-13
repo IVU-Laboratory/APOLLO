@@ -5,6 +5,7 @@ import os
 import pandas as pd
 from dotenv import load_dotenv
 import csv
+import time
 
 GPT_MODEL = "gpt-4-1106-preview"  # "gpt-3.5-turbo-0125"
 
@@ -18,22 +19,37 @@ GPT_MODEL = "gpt-4-1106-preview"  # "gpt-3.5-turbo-0125"
 # End index legit = 735
 # End index phishing = 2750
 
-START_INDEX = 100
+START_INDEX = 300
 END_INDEX = START_INDEX + 200
 ENRICH_URL = [False]
+QUANTILE = 100
 
 
 def main():
     load_dotenv(os.path.join("..", ".env"))
     llm_prompter.set_api_key()  # Statically set the API key for OpenAI
+    fieldnames = ["mail_id", "label", "prob", "true_label"]
 
-    y_results_url = []
-    y_results_no_url = []
+    # Get already classified emails
+    url_enriched_file = os.path.join('results', 'url_enriched_' + str(QUANTILE) + '.csv')
+    if os.path.exists(url_enriched_file):
+        y_results_url = pd.read_csv(url_enriched_file, names=fieldnames)
+    else:
+        open(url_enriched_file, 'a')  # create empty file
+        y_results_url = pd.DataFrame(columns=fieldnames)
+
+    url_no_enriched_file = os.path.join('results', 'no_url_enriched.csv')
+    if os.path.exists(url_no_enriched_file):
+        y_results_no_url = pd.read_csv(url_no_enriched_file, names=fieldnames)
+    else:
+        open(url_no_enriched_file, 'a')  # create empty file
+        y_results_no_url = pd.DataFrame(columns=fieldnames)
+
+    ## Load emails
     emails_df = pd.DataFrame()
     print("Loading emails...")
-    # load emails
     for file_name in ["legit.csv", "phishing.csv"]:
-        df = pd.read_csv(os.path.join('datasets', file_name), sep=";")
+        df = pd.read_csv(os.path.join('datasets', file_name), sep=",")
         emails_df = pd.concat([emails_df, df])
 
     # Get only emails in the specified range
@@ -42,11 +58,14 @@ def main():
     print("Classifying emails...")
     for enrich_url in ENRICH_URL:
         print("Enrich URL = " + ("True" if enrich_url else "False"))
-        for mail_id in range(0, len(emails_df)):
-            mail = emails_df.iloc[mail_id]
-            print("- Processing email " + str(mail["mail_id"]))
+        results = y_results_url if enrich_url else y_results_no_url  # get the correct dataframe (url enriched or not)
+        for i in range(0, len(emails_df)):
+            mail = emails_df.iloc[i]
+            if (results["mail_id"] == mail["mail_id"]).any():  # check if email was already processed
+                continue
+            print(f"- Processing email {str(mail['mail_id'])} (index {START_INDEX + i})")
             # Get additional information about URLs in the email
-            mail_urls = [] if mail["urls"] == 0 else mail["urls_"].split(" ")  # explode the string into a list
+            mail_urls = [] if len(mail["urls"]) == 0 else mail["urls"].split(" ")  # explode the string into a list
             if enrich_url:
                 if len(mail_urls) == 0:  # Then the result is already stored in the no_url counterpart
                     # print([d for d in y_results_no_url if d['mail_id'] == mail_id])
@@ -54,37 +73,31 @@ def main():
                     continue
                 else:
                     # Call remote API to gather online URL information
-                    url_to_analyze = mail_urls[0]  # for now, we take the first URL
-                    print("-- Analyzing URL: " + url_to_analyze)
-                    url_info = url_enricher.get_url_info(url_to_analyze)
+                    # url_to_analyze = mail_urls[0]  # for now, we take the first URL
+                    # print("-- Analyzing URL: " + url_to_analyze)
+                    url_info = url_enricher.get_dummy_values(QUANTILE, mail["url_location"], mail["label"])  # url_enricher.get_url_info(url_to_analyze)
             else:
                 url_info = None
 
             # Call GPT-4 for email phishing classification (automatic feature detection)
             # print("-- Classifying with GPT:")
-            # y_label, y_prob = None, None
-            y_label, y_prob = llm_prompter.classify_email_minimal(mail, url_info)
-            if y_prob is None:  # then there's an error in the response
-                continue
+            retry = True
+            while retry:
+                y_label, y_prob = llm_prompter.classify_email_minimal(mail, url_info)
+                if y_label is None or y_prob is None:  # then there's an error in the response
+                    print("Waiting 60 seconds before retrying...")
+                    time.sleep(60)  # wait for 60 seconds
+                    print("Retrying...")
+                else:
+                    retry = False
             result = {"mail_id": mail["mail_id"], "label": y_label, "prob": y_prob, "true_label": str(mail["label"])}
             print(f"{result['mail_id']},{result['label']},{result['prob']},{result['true_label']}")
-            if enrich_url:
-                y_results_url.append(result)
-            else:
-                y_results_no_url.append(result)
+            # append result to file
+            file_to_open = url_enriched_file if enrich_url else url_no_enriched_file
+            with open(file_to_open, 'a') as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writerow(result)
         print("\n\n####\n\n")
-
-    print("Saving results to file...")
-    fieldnames = ["mail_id", "label", "prob", "true_label"]
-    with open(os.path.join('results', 'url_enriched.csv'), 'a') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        for row in y_results_url:
-            writer.writerow(row)
-
-    with open(os.path.join('results', 'no_url_enriched.csv'), 'a') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)  # , lineterminator='\n')
-        for row in y_results_no_url:
-            writer.writerow(row)
 
 
 if __name__ == "__main__":
@@ -110,43 +123,3 @@ def add_missing_records_to_no_url_enriched_file():
     url_df.to_csv("url_enriched.csv", index=False)
 """
 
-
-def simulate_url_evaluation(emails_df, false_classification):
-    results_list = []
-    phishing_url_info_example = {
-        "VirusTotal scan": {'malicious': 10, 'suspicious': 0, 'undetected': 20, 'harmless': 60, 'timeout': 0}
-    }
-    legit_url_info_example = {
-        "VirusTotal scan": {'malicious': 0, 'suspicious': 0, 'undetected': 19, 'harmless': 73, 'timeout': 0}
-    }
-    for mail_id in range(0, len(emails_df)):
-        mail = emails_df.iloc[mail_id]
-        print("- Processing email " + str(mail["mail_id"]))
-        mail_urls = [] if mail["urls"] == "" else mail["urls"].split(" ")  # explode the string into a list
-        if len(mail_urls) == 0:  # Then the result is already stored in the no_url counterpart
-            # print([d for d in y_results_no_url if d['mail_id'] == mail_id])
-            print("No URL, skipping email...")
-            continue
-        else:
-            # simulate API call to url_enricher module
-            if mail["label"] == 0:  # true label = legit
-                if false_classification:
-                    url_info = phishing_url_info_example
-                else:
-                    url_info = legit_url_info_example
-            else:  # true label = phishing
-                if false_classification:
-                    url_info = legit_url_info_example
-                else:
-                    url_info = phishing_url_info_example
-
-        # Call GPT-4 for email phishing classification (automatic feature detection)
-        # print("-- Classifying with GPT:")
-        # y_label, y_prob = None, None
-        y_label, y_prob = llm_prompter.classify_email_minimal(mail, url_info, model=GPT_MODEL)
-        if y_prob is None:  # then there's an error in the response
-            continue
-        result = {"mail_id": mail["mail_id"], "label": y_label, "prob": y_prob, "true_label": str(mail["label"])}
-        print(f"{result['mail_id']},{result['label']},{result['prob']},{result['true_label']}")
-        results_list.append(result)
-    return results_list

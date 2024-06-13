@@ -209,13 +209,15 @@ def classify_email_minimal(email_input, url_info=None, model=MODEL):
         )
         classification_response = response.choices[0].message.content
         # Try getting the JSON object from the response
-    except:
-        print("Error in making the request to the LLM")
+    except Exception as e:
+        print("Error in making the request to the LLM:")
+        print(e)
         return "", None
     try:
         classification_response = json.loads(classification_response)
-    except:
-        print("Invalid JSON format in the response")
+    except Exception as e:
+        print("Invalid JSON format in the response:")
+        print(e)
         return classification_response, None
 
     if "label" in classification_response and "phishing_probability" in classification_response:
