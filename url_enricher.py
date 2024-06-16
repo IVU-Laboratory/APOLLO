@@ -163,19 +163,17 @@ def get_url_info(url_to_analyze, string_out=False):
 def get_dummy_values(percentile, location, label):
     percentile = 100 if percentile > 100 else percentile  # cap it at 100
     if label == 1:  # "phishing"
-        harmless_count = math.floor((100-percentile) * 0.1)
-        undetected_count = math.floor((100-percentile) * 0.9)
-        malicious_count = math.floor(percentile * 0.8)
-        suspicious_count = math.floor(percentile * 0.2)
+        harmless_count = 0
+        undetected_count = math.floor((100-percentile) + percentile * 0.05)
+        malicious_count = math.floor(percentile * 0.95)
         n_blacklists_found = percentile  # percentile = 100% -> n_blacklists = 100, etc.
     else:  # label == "legit"
-        harmless_count = math.floor(percentile * 0.9)
-        undetected_count = math.floor(percentile * 0.1 + (100-percentile) * 0.8)
+        harmless_count = math.floor(percentile * 0.75)
+        undetected_count = math.floor(percentile * 0.25 + (100-percentile))
         malicious_count = 0
-        suspicious_count = math.floor((100-percentile) * 0.2)
         n_blacklists_found = 0  # a genuine email will not be found in blacklists, despite of the time
-    vt_data = {'malicious': malicious_count, 'suspicious': suspicious_count, 'undetected': undetected_count,
-               'harmless': harmless_count, 'timeout': 0}
+    vt_data = {'malicious': malicious_count, 'undetected': undetected_count,
+               'harmless': harmless_count}
 
     return {
         'Server location': location,
@@ -184,8 +182,10 @@ def get_dummy_values(percentile, location, label):
     }
 
 
+
 if __name__ == "__main__":
-    url = get_fullhostname("https://instagram.com")
+    url = get_fullhostname("http://jssystems.com.bo//bac/jssystems_/it/")
     print(url)
     r = get_virustotal_data(url)
     print(r)
+

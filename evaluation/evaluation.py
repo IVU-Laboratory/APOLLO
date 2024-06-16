@@ -7,8 +7,6 @@ from dotenv import load_dotenv
 import csv
 import time
 
-GPT_MODEL = "gpt-4-1106-preview"  # "gpt-3.5-turbo-0125"
-
 
 # gpt-4-1106-preview
 # No URL
@@ -19,8 +17,8 @@ GPT_MODEL = "gpt-4-1106-preview"  # "gpt-3.5-turbo-0125"
 # End index legit = 735
 # End index phishing = 2750
 
-START_INDEX = 300
-END_INDEX = START_INDEX + 200
+START_INDEX = 0
+END_INDEX = START_INDEX + 800
 ENRICH_URL = [False]
 QUANTILE = 100
 
@@ -81,15 +79,20 @@ def main():
 
             # Call GPT-4 for email phishing classification (automatic feature detection)
             # print("-- Classifying with GPT:")
-            retry = True
-            while retry:
+            retry_counter = 3
+            while True:
                 y_label, y_prob = llm_prompter.classify_email_minimal(mail, url_info)
-                if y_label is None or y_prob is None:  # then there's an error in the response
+                if y_label == "Invalid format":
+                    if retry_counter > 0:
+                        retry_counter -= 1
+                    else:
+                        break
+                elif y_label is None or y_prob is None:  # then there's an error in the response
                     print("Waiting 60 seconds before retrying...")
                     time.sleep(60)  # wait for 60 seconds
                     print("Retrying...")
                 else:
-                    retry = False
+                    break
             result = {"mail_id": mail["mail_id"], "label": y_label, "prob": y_prob, "true_label": str(mail["label"])}
             print(f"{result['mail_id']},{result['label']},{result['prob']},{result['true_label']}")
             # append result to file

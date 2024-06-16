@@ -3,16 +3,16 @@ import json
 import os
 import asyncio
 from g4f.client import Client
-from g4f.Provider import RetryProvider, Bing, Phind, FreeChatgpt, Liaobots, You, Llama
+from g4f.Provider import RetryProvider, Bing, Phind, FreeChatgpt, Liaobots, You, Llama, Theb
 
 SEED = 42
-MODEL = "gpt-4"  # "gpt-3.5-turbo-1106"
+MODEL = "gpt-3.5"  # "gpt-3.5-turbo-1106"
 TEMPERATURE = 0.0001
 
 # Set a global client for GPT4free
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 client = Client(
-    provider=RetryProvider([Bing, Phind, FreeChatgpt, Liaobots, You, Llama], shuffle=False)
+    provider=RetryProvider([Bing, Phind, FreeChatgpt, You, Llama, Theb], shuffle=False)  # https://github.com/xtekky/gpt4free
 )
 
 
@@ -24,7 +24,7 @@ def classify_email(email_input, feature_to_explain=None, url_info=None, explanat
         to make more informed decisions.
         The user will submit the email (headers + subject + body) optionally accompanied by information of the URLs in the email as:
         - server location;
-        - VirusTotal scans reporting the number of scanners that detected the URL as harmless, undetected, suspicious, malicious;
+        - VirusTotal scans reporting the number of scanners that detected the URL as harmless;
         - number of blacklists in which the linked domain was found.
 
         Your goal is to output a JSON object containing:
@@ -216,9 +216,9 @@ def classify_email_minimal(email_input, url_info=None, model=MODEL):
     try:
         classification_response = json.loads(classification_response)
     except Exception as e:
-        print("Invalid JSON format in the response:")
+        print("Invalid JSON format in the response:", classification_response)
         print(e)
-        return classification_response, None
+        return "Invalid format", None
 
     if "label" in classification_response and "phishing_probability" in classification_response:
         predicted_label = classification_response['label']
