@@ -182,7 +182,6 @@ def get_dummy_values(percentile, location, label):
     }
 
 
-
 if __name__ == "__main__":
     url = get_fullhostname("http://jssystems.com.bo//bac/jssystems_/it/")
     print(url)

@@ -6,14 +6,15 @@ from g4f.client import Client
 from g4f.Provider import RetryProvider, Bing, Phind, FreeChatgpt, Liaobots, You, Llama, Theb
 
 SEED = 42
-MODEL = "gpt-3.5"  # "gpt-3.5-turbo-1106"
+MODEL = "gpt-4o-2024-05-13"  # "gpt-4"  # "gpt-3.5-turbo-1106"
 TEMPERATURE = 0.0001
 
 # Set a global client for GPT4free
 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-client = Client(
+"""client = Client(
     provider=RetryProvider([Bing, Phind, FreeChatgpt, You, Llama, Theb], shuffle=False)  # https://github.com/xtekky/gpt4free
-)
+)"""
+client = openai  # use OpenAI apis as the client
 
 
 def classify_email(email_input, feature_to_explain=None, url_info=None, explanations_min=3, explanations_max=6, model=MODEL):
@@ -227,3 +228,106 @@ def classify_email_minimal(email_input, url_info=None, model=MODEL):
     else:
         print("The response does not contain the predicted label (phishing/non-phishing)")
         return classification_response, ""
+
+
+def generate_batch_requests_file(emails_df, output_file_path):
+    assistant_prompt = '''You are a cybersecurity and human-computer interaction expert that has the goal to detect
+           if an email is legitimate or phishing and help the user understand why a specific email is dangerous (or genuine), in order
+           to make more informed decisions.
+           The user will submit the email (headers + subject + body) optionally accompanied by information of the URLs in the email as:
+           - server location;
+           - VirusTotal scans reporting the number of scanners that detected the URL as harmless, undetected, suspicious, malicious;
+           - number of blacklists in which the linked domain was found.\n
+           Your goal is to output a JSON object containing:
+           - The classification result (label).
+           - The probability in percentage of the email being phishing (0%=email is surely legitimate, 100%=email is surely phishing) (phishing_probability).\n
+           Desired format:
+           {
+            label: <phishing/legit>
+            phishing_probability: <0-100%>
+           }\n
+           Answer with the JSON object exclusively.\n
+           '''
+    requests = []
+    for i in range(0, len(emails_df)):
+        mail = emails_df.iloc[i]
+        email_prompt = get_email_prompt(mail, mail["url_info"])
+        messages = [{"role": "system", content = assistant_prompt}, {"role": "user", "content": email_prompt}]
+        request = {
+            "custom_id": "request-" + str(i), 
+            "method": "POST", 
+            "url": "/v1/chat/completions",
+            "body": {
+                "model": MODEL_BATCH,
+                "seed": SEED,
+                "temperature": TEMPERATURE,
+                "response_format": {"type": "json_object"}
+                "messages": messages 
+            }
+        }
+        requests.append(request)
+    # Write the requests on a JSONL file
+    with open(output_file_path, 'w') as f:
+        for r in requests:
+            f.write(json.dumps(r) + "\n")
+        print("Requests file created at ", output_file_path)
+
+
+def get_email_prompt(email_input, url_info=None):
+    # User input (email)
+    headers = str(email_input["headers"])
+    subject = email_input["subject"]
+    body = email_input["body"]
+    email_prompt = f'''\n\nEmail:\n
+        """
+        [HEADERS]
+        {headers}
+        [\HEADERS]
+        [SUBJECT] {subject} [\SUBJECT]
+        [BODY]
+        {body}
+        [\BODY]
+        """
+    '''
+    # Add the url_info if it exists
+    if url_info is not None:
+        email_prompt += f"""
+
+             ######
+
+             URL Information:
+             {str(url_info)}"""
+    return email_prompt
+
+
+def launch_batch(batch_file, description="Evaluation"):
+    # Upload the file with the requests
+    batch_input_file = client.files.create(
+        file=open(batch_file, "rb"),
+        purpose="batch"
+    )
+    print("Uploaded file " + batch_file + " successfully")
+    # Start the batch 
+    batch = client.batches.create(
+        input_file_id=batch_input_file.id,
+        endpoint="/v1/chat/completions",
+        completion_window="24h",
+        metadata={
+        "description": description
+        }
+    )
+    print("Batch started!")
+    print(batch)
+    return (batch.id, batch.output_file_id)  # return the batch and file IDs for further inspection
+
+
+def check_batch_status(batch_id):
+    batch = client.batches.retrieve(batch_id)
+    print("Batch status:")
+    print(batch)
+    return (batch.id, batch.output_file_id)
+
+
+def retrieve_batch_results(results_file_id):
+    content = client.files.content(results_file_id)
+    return content
