@@ -10,7 +10,7 @@ ENRICH_URL = False
 
 def main():
     load_dotenv()
-    llm_prompter.set_api_key()  # Statically set the API key for OpenAI
+    llm_prompter.initialize_openAI()  # Statically set the API key for OpenAI
 
     # Open and preprocess an email
     email_filename = "email_name.eml"  # ENTER THE EMAIL FILE NAME HERE

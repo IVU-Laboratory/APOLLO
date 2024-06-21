@@ -2,11 +2,12 @@ import openai
 import json
 import os
 import asyncio
-from g4f.client import Client
+# from g4f.client import Client
 from g4f.Provider import RetryProvider, Bing, Phind, FreeChatgpt, Liaobots, You, Llama, Theb
 
 SEED = 42
 MODEL = "gpt-4o-2024-05-13"  # "gpt-4"  # "gpt-3.5-turbo-1106"
+MODEL_BATCH = "gpt-4o-2024-05-13"
 TEMPERATURE = 0.0001
 
 # Set a global client for GPT4free
@@ -14,10 +15,11 @@ asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 """client = Client(
     provider=RetryProvider([Bing, Phind, FreeChatgpt, You, Llama, Theb], shuffle=False)  # https://github.com/xtekky/gpt4free
 )"""
-client = openai  # use OpenAI apis as the client
+global client
 
 
-def classify_email(email_input, feature_to_explain=None, url_info=None, explanations_min=3, explanations_max=6, model=MODEL):
+def classify_email(email_input, feature_to_explain=None, url_info=None, explanations_min=3, explanations_max=6,
+                   model=MODEL):
     # Initial Prompt
     messages = [
         {"role": "system", "content": f'''You are a cybersecurity and human-computer interaction expert that has the goal to detect
@@ -71,8 +73,7 @@ def classify_email(email_input, feature_to_explain=None, url_info=None, explanat
 
     messages.append({"role": "user", "content": email_prompt})
     # Get the classification response
-
-    client = Client()
+    # client = Client()
     response = client.chat.completions.create(
         model=model,
         seed=SEED,
@@ -151,8 +152,10 @@ def classify_email(email_input, feature_to_explain=None, url_info=None, explanat
         return classification_response, ""
 
 
-def set_api_key():
-    openai.api_key = os.getenv('OPENAI_API')
+def initialize_openAI():
+    openai.api_key = os.getenv('OPENAI_API_KEY')
+    global client
+    client = openai.OpenAI()  # use OpenAI apis as the client
 
 
 def classify_email_minimal(email_input, url_info=None, model=MODEL):
@@ -252,17 +255,20 @@ def generate_batch_requests_file(emails_df, output_file_path):
     for i in range(0, len(emails_df)):
         mail = emails_df.iloc[i]
         email_prompt = get_email_prompt(mail, mail["url_info"])
-        messages = [{"role": "system", content = assistant_prompt}, {"role": "user", "content": email_prompt}]
+        messages = [{"role": "system", "content": assistant_prompt},
+                    {"role": "user", "content": email_prompt}]
+        mail_ID = str(mail["mail_id"])
+        true_label = str(int(mail["label"]))
         request = {
-            "custom_id": "request-" + str(i), 
-            "method": "POST", 
+            "custom_id": mail_ID + "_" + true_label,  # the ID format must be = "mailID_label"
+            "method": "POST",
             "url": "/v1/chat/completions",
             "body": {
                 "model": MODEL_BATCH,
                 "seed": SEED,
                 "temperature": TEMPERATURE,
-                "response_format": {"type": "json_object"}
-                "messages": messages 
+                "response_format": {"type": "json_object"},
+                "messages": messages
             }
         }
         requests.append(request)
@@ -313,21 +319,46 @@ def launch_batch(batch_file, description="Evaluation"):
         endpoint="/v1/chat/completions",
         completion_window="24h",
         metadata={
-        "description": description
+            "description": description
         }
     )
     print("Batch started!")
     print(batch)
-    return (batch.id, batch.output_file_id)  # return the batch and file IDs for further inspection
+    with open("batch_info.json", "w") as info_file:
+        json_object = {"batch_id": batch.id, "input_file": batch.input_file_id,
+                       "created_at": batch.created_at}  # , "expiration": batch.expiration}
+        info_file.write(json.dumps(json_object))
+    return batch.id  # return the batch ID for further inspection
 
 
 def check_batch_status(batch_id):
     batch = client.batches.retrieve(batch_id)
     print("Batch status:")
     print(batch)
-    return (batch.id, batch.output_file_id)
+    return batch.output_file_id  # returns the output ID, if the batch was successfully executed
 
 
 def retrieve_batch_results(results_file_id):
     content = client.files.content(results_file_id)
-    return content
+    return content.response.text
+
+
+"""try:
+    response = content.response.text
+    lines = str.split(response, "\n")  # get the indiviudal lines of the jsonl results file in response
+    results = []
+    for line in lines:
+        if :
+            json_object = json.loads(line)
+            try:
+                model_response = json_object["response"]["body"]["choices"][0]["message"]["content"]
+                model_response = json.loads(model_response)
+                result = {}
+                results.append(result)
+            except json.decoder.JSONDecodeError as e:
+                print(e)
+                continue
+    return results
+except Exception as e:
+    print(e)
+    return []"""
