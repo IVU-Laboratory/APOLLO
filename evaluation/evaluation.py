@@ -1,11 +1,8 @@
-import preprocessor
 import url_enricher
 import llm_prompter
 import os
 import pandas as pd
 from dotenv import load_dotenv
-import csv
-import time
 import json
 
 # gpt-4-1106-preview
@@ -17,48 +14,63 @@ import json
 # End index legit = 735
 # End index phishing = 2750
 
-START_INDEX = 1000
-END_INDEX = START_INDEX + 10
-
 # Set ENRICH_URL to True to create a batch of requests that include URL Info
 ENRICH_URL = False
 QUANTILE = 100
-
-GENERATE = False
-LAUNCH = False
-RETRIEVE = True
 
 fieldnames = ["mail_id", "label", "prob", "true_label"]
 
 
 def main():
-    if ENRICH_URL:
-        file_name = f"requests_URL_{START_INDEX}-{END_INDEX}_time={str(QUANTILE)}.jsonl"
-    else:
-        file_name = f"requests_noURL_{START_INDEX}-{END_INDEX}.jsonl"
-    requests_batch_file = os.path.join("batches", "requests", file_name)
-    results_file = os.path.join("batches", "results", file_name)
-    # Initialize Open AI parameters
-    load_dotenv(os.path.join("..", ".env"))
-    llm_prompter.initialize_openAI()  # Statically set the API key for OpenAI
+    # get the emails from phishing.csv and legit.csv
+    emails_df = load_emails(["legit.csv", "phishing.csv"])
 
-    batch_id = None  # initialize variable
-    if GENERATE:  # Generate the requests
-        # get the emails from phishing.csv and legit.csv 
-        emails_df = load_emails(["legit.csv", "phishing.csv"])
-        # Create a jsonl file with the batch requests for OpenAI
-        llm_prompter.generate_batch_requests_file(emails_df, requests_batch_file)
-    if LAUNCH:  # Launch batch
-        batch_id = llm_prompter.launch_batch(requests_batch_file)
-    if RETRIEVE:  # Retrieve results
-        if batch_id is None:  # if there is no batch ID set, ask it to the user
-            batch_id = input("Enter the batch ID (found in the batch_info.txt file):")
-        file_id = llm_prompter.check_batch_status(batch_id)
-        if file_id is not None:  # if the process executed successfully
-            # Retrieve the results
-            batch_output = llm_prompter.retrieve_batch_results(file_id)
-            results = read_batch_putput_file(batch_output)
-            results.to_csv(results_file)
+    batch_length = 100
+    dataset_length = len(emails_df)
+    n_batches = dataset_length // batch_length
+
+    input_command = 0
+
+    while input_command != 4:
+        os.system('cls' if os.name == 'nt' else 'clear')
+        print("1. Generate batches\n2. Launch batches\n3. Retrieve\n4. Exit")
+        input_command = input("Insert your choice (1-4)")
+        while input_command not in ["1", "2", "3", "4"]:
+            input_command = input("Insert a valid command (1-4)")
+        generate = input_command == "1"
+        launch = input_command == "2"
+        retrieve = input_command == "3"
+        for i in range(n_batches):
+            start_index = i * batch_length
+            end_index = start_index + batch_length
+            if ENRICH_URL:
+                file_name = f"requests_URL_{start_index}-{end_index}_time={str(QUANTILE)}.jsonl"
+            else:
+                file_name = f"requests_noURL_{start_index}-{end_index}.jsonl"
+
+            # Initialize Open AI parameters
+            load_dotenv(os.path.join("..", ".env"))
+            llm_prompter.initialize_openAI()  # Statically set the API key for OpenAI
+
+            if generate:  # Generate the requests
+                # Create a jsonl file with the batch requests for OpenAI
+                batch_df = emails_df[start_index:end_index]
+                llm_prompter.generate_batch_requests_file(batch_df, file_name)
+            if launch:  # Launch batch
+                llm_prompter.launch_batch(file_name)
+
+        if retrieve:  # Retrieve results
+            # if batch_id is None:  # if there is no batch ID set, ask it to the user
+            #    batch_id = input("Enter the batch ID (found in the batch_info.txt file):")
+            batches_info = llm_prompter.get_batches_info()
+            for batch_id, batch_name in batches_info:
+                file_id = llm_prompter.check_batch_status(batch_id)
+                if file_id is not None:  # if the process executed successfully
+                    # Retrieve the results
+                    batch_output = llm_prompter.retrieve_batch_results(file_id)
+                    results = read_batch_putput_file(batch_output)
+                    results_file = os.path.join("batches", "results", batch_name)
+                    results.to_csv(results_file)
 
 
 def load_emails(csv_files):
@@ -69,15 +81,15 @@ def load_emails(csv_files):
         emails_df = pd.concat([emails_df, df])
 
     # Get only emails in the specified range
-    emails_df = emails_df.iloc[START_INDEX:END_INDEX]
+    # emails_df = emails_df.iloc[START_INDEX:END_INDEX]
     emails_df["url_info"] = None  # initialize empty column for the URL information
 
-    already_processed = load_already_classified_emails(ENRICH_URL)  # get a dataframe with the already processed emails
+    #already_processed = load_already_classified_emails(ENRICH_URL)  # get a dataframe with the already processed emails
     for i in range(0, len(emails_df)):
         mail = emails_df.iloc[i]
         mail_urls = [] if len(mail["urls"]) == 0 else mail["urls"].split(" ")  # explode the string into a list
         # If email has no URL OR if email was already processed, skip it
-        if len(mail_urls) == 0 or (already_processed["mail_id"] == mail["mail_id"]).any():
+        if len(mail_urls) == 0:  # or (already_processed["mail_id"] == mail["mail_id"]).any():
             emails_df = emails_df.drop(i)
         else:
             # Get additional information about URLs in the email
@@ -105,7 +117,7 @@ def load_already_classified_emails(enrich_url):
 
 
 def read_batch_putput_file(batch_result):
-    lines = str.split(batch_result, "\n")  # get the indiviudal lines of the jsonl results file in response
+    lines = str.split(batch_result, "\n")  # get the individual lines of the jsonl results file in response
     results = []
     for line in lines:
         if len(line) > 0:  # be sure each line is not empty

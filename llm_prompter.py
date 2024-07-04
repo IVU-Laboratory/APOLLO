@@ -233,7 +233,7 @@ def classify_email_minimal(email_input, url_info=None, model=MODEL):
         return classification_response, ""
 
 
-def generate_batch_requests_file(emails_df, output_file_path):
+def generate_batch_requests_file(emails_df, file_name):
     assistant_prompt = '''You are a cybersecurity and human-computer interaction expert that has the goal to detect
            if an email is legitimate or phishing and help the user understand why a specific email is dangerous (or genuine), in order
            to make more informed decisions.
@@ -258,7 +258,11 @@ def generate_batch_requests_file(emails_df, output_file_path):
         messages = [{"role": "system", "content": assistant_prompt},
                     {"role": "user", "content": email_prompt}]
         mail_ID = str(mail["mail_id"])
-        true_label = str(int(mail["label"]))
+        try:
+            true_label = str(int(mail["label"]))
+        except ValueError:
+            print("Invalid label", mail)
+            true_label = "na"
         request = {
             "custom_id": mail_ID + "_" + true_label,  # the ID format must be = "mailID_label"
             "method": "POST",
@@ -273,6 +277,7 @@ def generate_batch_requests_file(emails_df, output_file_path):
         }
         requests.append(request)
     # Write the requests on a JSONL file
+    output_file_path = os.path.join("batches", "requests", file_name)
     with open(output_file_path, 'w') as f:
         for r in requests:
             f.write(json.dumps(r) + "\n")
@@ -306,10 +311,17 @@ def get_email_prompt(email_input, url_info=None):
     return email_prompt
 
 
-def launch_batch(batch_file, description="Evaluation"):
+def launch_batch(batch_file, output_file_name="batch_info.jsonl"):
+    """
+    Uploads the batch file to OpenAI and launches it. It also saves the batch information on output_file_name file
+    :param batch_file: the local file containing the requests of a specific batch
+    :param output_file_name: the file on which to write the information about the batches (in append)
+    :return:
+    """
     # Upload the file with the requests
+    file_name = os.path.join("batches", "requests", batch_file)
     batch_input_file = client.files.create(
-        file=open(batch_file, "rb"),
+        file=open(file_name, "rb"),
         purpose="batch"
     )
     print("Uploaded file " + batch_file + " successfully")
@@ -319,28 +331,38 @@ def launch_batch(batch_file, description="Evaluation"):
         endpoint="/v1/chat/completions",
         completion_window="24h",
         metadata={
-            "description": description
+            "description": batch_file
         }
     )
     print("Batch started!")
     print(batch)
-    with open("batch_info.json", "w") as info_file:
+    with open(output_file_name, "a") as info_file:
         json_object = {"batch_id": batch.id, "input_file": batch.input_file_id,
-                       "created_at": batch.created_at}  # , "expiration": batch.expiration}
-        info_file.write(json.dumps(json_object))
+                       "created_at": batch.created_at, "local_file_name": batch_file}  # , "expiration": batch.expiration}
+        info_file.writelines("\n" + json.dumps(json_object))
     return batch.id  # return the batch ID for further inspection
 
 
 def check_batch_status(batch_id):
     batch = client.batches.retrieve(batch_id)
-    print("Batch status:")
+    print("Batch status:", batch.status)
     print(batch)
-    return batch.output_file_id  # returns the output ID, if the batch was successfully executed
+    if batch.status == "completed":
+        return batch.output_file_id  # returns the output ID, if the batch was successfully executed
+    else:
+        return None
 
 
 def retrieve_batch_results(results_file_id):
     content = client.files.content(results_file_id)
     return content.response.text
+
+
+def get_batches_info():
+    with open("batch_info.jsonl", "r") as info_file:
+        data = [json.loads(line) for line in info_file]
+        batches = [(b["batch_id"], b["local_file_name"]) for b in data]
+        return batches
 
 
 """try:
