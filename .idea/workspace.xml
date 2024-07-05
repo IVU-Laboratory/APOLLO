@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="364bea1d-b71c-43e7-a4da-1b1bb8a883b9" name="Changes" comment="Add batch requests support">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluation/batch_info.jsonl" beforeDir="false" afterPath="$PROJECT_DIR$/evaluation/batch_info.jsonl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluation/datasets/phishing.csv" beforeDir="false" afterPath="$PROJECT_DIR$/evaluation/datasets/phishing.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluation/evaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/evaluation/evaluation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluation/results/GPT-4 evaluation.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluation/results/OLD/gpt-3.5-turbo-0125/no_url_enriched.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluation/results/OLD/gpt-4-1106-preview/no_url_enriched.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluation/results/OLD/gpt-4-1106-preview/url_enriched.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluation/results/no_url_enriched.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluation/results/url_enriched_100.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/llm_prompter.py" beforeDir="false" afterPath="$PROJECT_DIR$/llm_prompter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/url_enricher.py" beforeDir="false" afterPath="$PROJECT_DIR$/url_enricher.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;TheGreek97&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/TheGreek97/AntiPhish-LLM&quot;,
+    &quot;accountId&quot;: &quot;814d858f-97b8-4a82-aeeb-09f500a2b5a4&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
+  <component name="ProjectId" id="2eXKVO3IqMuFJ2u4JtmXSwRWkt3" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.evaluation.executor": "Run",
+    "Python.llm_prompter.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "EICS",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/Francesco/PycharmProjects/AntiPhish-LLM/evaluation/batches/requests",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Francesco\PycharmProjects\AntiPhish-LLM\evaluation\batches\requests" />
+      <recent name="C:\Users\Francesco\PycharmProjects\AntiPhish-LLM\evaluation\batches\results" />
+      <recent name="C:\Users\Francesco\PycharmProjects\AntiPhish-LLM\evaluation\datasets" />
+      <recent name="C:\Users\Francesco\PycharmProjects\AntiPhish-LLM" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Francesco\PycharmProjects\AntiPhish-LLM\evaluation" />
+      <recent name="C:\Users\Francesco\PycharmProjects\AntiPhish-LLM\evaluation\results\OLD" />
+      <recent name="C:\Users\Francesco\PycharmProjects\AntiPhish-LLM\evaluation\batches\requests" />
+      <recent name="C:\Users\Francesco\PycharmProjects\AntiPhish-LLM\evaluation\batches\old_requests" />
+      <recent name="C:\Users\Francesco\PycharmProjects\AntiPhish-LLM\evaluation\results\gpt-3.5-turbo-0125" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.evaluation">
+    <configuration name="dataset_polisher (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="AntiPhish-LLM" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/dataset_polisher.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="dataset_polisher" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="AntiPhish-LLM" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../itasec-llm-phishing-detector" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../itasec-llm-phishing-detector/dataset_polisher.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="evaluation" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="AntiPhish-LLM" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/evaluation" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/evaluation/evaluation.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="llm_prompter" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="AntiPhish-LLM" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/llm_prompter.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="url_enricher" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="AntiPhish-LLM" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/url_enricher.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.evaluation" />
+        <item itemvalue="Python.llm_prompter" />
+        <item itemvalue="Python.url_enricher" />
+        <item itemvalue="Python.dataset_polisher (1)" />
+        <item itemvalue="Python.dataset_polisher" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-PY-241.18034.82" />
+        <option value="bundled-python-sdk-975db3bf15a3-2767605e8bc2-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.18034.82" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="364bea1d-b71c-43e7-a4da-1b1bb8a883b9" name="Changes" comment="" />
+      <created>1712045510574</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1712045510574</updated>
+      <workItem from="1712045513135" duration="2911000" />
+      <workItem from="1712073875639" duration="6000" />
+      <workItem from="1712306843852" duration="18000" />
+      <workItem from="1713273339524" duration="21742000" />
+      <workItem from="1713339431944" duration="20375000" />
+      <workItem from="1713604263629" duration="2867000" />
+      <workItem from="1713863288978" duration="7345000" />
+      <workItem from="1714383072571" duration="1635000" />
+      <workItem from="1714486804802" duration="2360000" />
+      <workItem from="1714754349152" duration="816000" />
+      <workItem from="1714980181615" duration="5565000" />
+      <workItem from="1718095922457" duration="14343000" />
+      <workItem from="1718177839358" duration="19501000" />
+      <workItem from="1718225042828" duration="207000" />
+      <workItem from="1718263163091" duration="22174000" />
+      <workItem from="1718696148225" duration="3247000" />
+      <workItem from="1718722071100" duration="1207000" />
+      <workItem from="1718864366628" duration="36000" />
+      <workItem from="1718954525026" duration="11506000" />
+      <workItem from="1719908167168" duration="4396000" />
+      <workItem from="1720166854863" duration="21722000" />
+    </task>
+    <task id="LOCAL-00001" summary="Fix requirements.txt&#10;Fix model temperature">
+      <created>1712049973373</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1712049973373</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Edit Readme">
+      <created>1712050459099</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1712050459099</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Add Evaluation module">
+      <created>1713302521386</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1713302521386</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Evaluated no URL enriched 1726 + 1004">
+      <created>1713360851484</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1713360851484</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Evaluated no URL enriched complete">
+      <created>1713364882050</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1713364882050</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Evaluated URL enriched progress">
+      <created>1713733038962</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1713733038962</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Evaluated URL enriched progress">
+      <created>1714415498849</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1714415498849</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Updated Datasets">
+      <created>1718117883727</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1718117883727</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Updated Datasets">
+      <created>1718132318745</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1718132318745</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Add domain geolocation calculator in dataset_polisher.py">
+      <created>1718225141711</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1718225141711</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Add constant result file update, duplicate checker, auto retry">
+      <created>1718281717397</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1718281717397</updated>
+    </task>
+    <task id="LOCAL-00012" summary="latest updates to code">
+      <created>1718537910041</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1718537910041</updated>
+    </task>
+    <task id="LOCAL-00013" summary="latest updates to code">
+      <created>1718864388092</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1718864388092</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Add batch requests support">
+      <created>1718972260475</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1718972260475</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="CUSTOM_BOOLEAN_PROPERTIES">
+                <map>
+                  <entry key="Show.Git.Branches" value="false" />
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Fix requirements.txt&#10;Fix model temperature" />
+    <MESSAGE value="Edit Readme" />
+    <MESSAGE value="Add Evaluation module" />
+    <MESSAGE value="Evaluated no URL enriched 1726 + 1004" />
+    <MESSAGE value="Evaluated no URL enriched complete" />
+    <MESSAGE value="Evaluated URL enriched progress" />
+    <MESSAGE value="Updated Datasets" />
+    <MESSAGE value="Add domain geolocation calculator in dataset_polisher.py" />
+    <MESSAGE value="Add constant result file update, duplicate checker, auto retry" />
+    <MESSAGE value="latest updates to code" />
+    <MESSAGE value="Add batch requests support" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add batch requests support" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/llm_prompter.py</url>
+          <line>162</line>
+          <option name="timeStamp" value="14" />
+        </line-breakpoint>
+      </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/AntiPhish_LLM$dataset_polisher__1_.coverage" NAME="dataset_polisher (1) Coverage Results" MODIFIED="1718202261064" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/AntiPhish_LLM$url_enricher.coverage" NAME="url_enricher Coverage Results" MODIFIED="1718378968151" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/AntiPhish_LLM$llm_prompter.coverage" NAME="llm_prompter Coverage Results" MODIFIED="1720183669864" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/AntiPhish_LLM$dataset_polisher.coverage" NAME="dataset_polisher Coverage Results" MODIFIED="1713360970084" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../itasec-llm-phishing-detector" />
+    <SUITE FILE_PATH="coverage/AntiPhish_LLM$evaluation.coverage" NAME="evaluation Coverage Results" MODIFIED="1720194291500" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/evaluation" />
+  </component>
+</project>

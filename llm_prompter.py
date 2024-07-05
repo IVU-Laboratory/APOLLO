@@ -1,3 +1,5 @@
+import time
+from datetime import datetime
 import openai
 import json
 import os
@@ -16,6 +18,10 @@ asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     provider=RetryProvider([Bing, Phind, FreeChatgpt, You, Llama, Theb], shuffle=False)  # https://github.com/xtekky/gpt4free
 )"""
 global client
+
+
+def get_batch_model():
+    return MODEL_BATCH
 
 
 def classify_email(email_input, feature_to_explain=None, url_info=None, explanations_min=3, explanations_max=6,
@@ -311,42 +317,68 @@ def get_email_prompt(email_input, url_info=None):
     return email_prompt
 
 
+def launch_all_batches(batch_files):
+    fetch_wait_time = 15  # seconds between each fetch
+    for batch_file in batch_files:
+        batch_id = launch_batch(batch_file)
+        time.sleep(2)
+        launched_batch = client.batches.retrieve(batch_id)
+
+        if launched_batch.status != "failed":
+            while launched_batch.status != "completed":
+                print(f"Batch status = {launched_batch.status}. Checking again in {fetch_wait_time} seconds...")
+                time.sleep(fetch_wait_time)
+                launched_batch = client.batches.retrieve(batch_id)
+            print(f"Batch {batch_id} completed!\n")
+        else:
+            print(f"Couldn't launch batch {batch_id}")
+            print(launched_batch)
+
+
 def launch_batch(batch_file, output_file_name="batch_info.jsonl"):
     """
     Uploads the batch file to OpenAI and launches it. It also saves the batch information on output_file_name file
     :param batch_file: the local file containing the requests of a specific batch
     :param output_file_name: the file on which to write the information about the batches (in append)
-    :return:
+    :return: the batch ID of the launched batch
     """
     # Upload the file with the requests
     file_name = os.path.join("batches", "requests", batch_file)
-    batch_input_file = client.files.create(
-        file=open(file_name, "rb"),
-        purpose="batch"
-    )
-    print("Uploaded file " + batch_file + " successfully")
-    # Start the batch 
-    batch = client.batches.create(
-        input_file_id=batch_input_file.id,
-        endpoint="/v1/chat/completions",
-        completion_window="24h",
-        metadata={
-            "description": batch_file
-        }
-    )
-    print("Batch started!")
-    print(batch)
-    with open(output_file_name, "a") as info_file:
-        json_object = {"batch_id": batch.id, "input_file": batch.input_file_id,
-                       "created_at": batch.created_at, "local_file_name": batch_file}  # , "expiration": batch.expiration}
-        info_file.writelines("\n" + json.dumps(json_object))
+    with open(file_name, "rb") as f:
+        batch_input_file = client.files.create(
+            file=f,
+            purpose="batch"
+        )
+        print("Uploaded file " + batch_file + " successfully")
+        # Start the batch
+        batch = client.batches.create(
+            input_file_id=batch_input_file.id,
+            endpoint="/v1/chat/completions",
+            completion_window="24h",
+            metadata={
+                "description": batch_file
+            }
+        )
+        print("Batch started!")
+        print(batch)
+    if output_file_name != "":
+        # Write the batch information in the output_file_name file (batch_info.jsonl)
+        with open(output_file_name, "a") as info_file:
+            json_object = {"batch_id": batch.id, "input_file": batch.input_file_id,
+                           "created_at": datetime.fromtimestamp(batch.created_at).strftime("%m/%d/%Y, %H:%M:%S"),
+                           "local_file_name": batch_file}  # , "expiration": batch.expiration}
+            info_file.writelines("\n" + json.dumps(json_object))
+        # remove the launched request from the batches/requests folder and move it to the batches/old_requests folder
+    os.rename(file_name, os.path.join("batches", "old_requests", batch_file))
+
     return batch.id  # return the batch ID for further inspection
 
 
-def check_batch_status(batch_id):
+def check_batch_status(batch_id, verbose=True):
     batch = client.batches.retrieve(batch_id)
-    print("Batch status:", batch.status)
-    print(batch)
+    if verbose:
+        print("Batch status:", batch.status)
+        print(batch)
     if batch.status == "completed":
         return batch.output_file_id  # returns the output ID, if the batch was successfully executed
     else:

@@ -171,7 +171,7 @@ def get_dummy_values(percentile, location, label):
         harmless_count = math.floor(percentile * 0.75)
         undetected_count = math.floor(percentile * 0.25 + (100-percentile))
         malicious_count = 0
-        n_blacklists_found = 0  # a genuine email will not be found in blacklists, despite of the time
+        n_blacklists_found = 0  # a genuine email will not be found in blacklists, despite the time
     vt_data = {'malicious': malicious_count, 'undetected': undetected_count,
                'harmless': harmless_count}
 
