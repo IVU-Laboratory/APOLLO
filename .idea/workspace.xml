@@ -4,19 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="364bea1d-b71c-43e7-a4da-1b1bb8a883b9" name="Changes" comment="Add batch requests support">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="364bea1d-b71c-43e7-a4da-1b1bb8a883b9" name="Changes" comment="Add noURL and URLQ_100 evaluations with GPT4o">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/evaluation/batch_info.jsonl" beforeDir="false" afterPath="$PROJECT_DIR$/evaluation/batch_info.jsonl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/evaluation/datasets/phishing.csv" beforeDir="false" afterPath="$PROJECT_DIR$/evaluation/datasets/phishing.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/evaluation/evaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/evaluation/evaluation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/evaluation/results/GPT-4 evaluation.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/evaluation/results/OLD/gpt-3.5-turbo-0125/no_url_enriched.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/evaluation/results/OLD/gpt-4-1106-preview/no_url_enriched.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/evaluation/results/OLD/gpt-4-1106-preview/url_enriched.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/evaluation/results/no_url_enriched.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/evaluation/results/url_enriched_100.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/llm_prompter.py" beforeDir="false" afterPath="$PROJECT_DIR$/llm_prompter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/url_enricher.py" beforeDir="false" afterPath="$PROJECT_DIR$/url_enricher.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluation/metrics.csv" beforeDir="false" afterPath="$PROJECT_DIR$/evaluation/metrics.csv" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,22 +45,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.evaluation.executor": "Run",
-    "Python.llm_prompter.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "EICS",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/Francesco/PycharmProjects/AntiPhish-LLM/evaluation/batches/requests",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.evaluation.executor&quot;: &quot;Run&quot;,
+    &quot;Python.llm_prompter.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;EICS&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Francesco/PycharmProjects/AntiPhish-LLM/evaluation/batches/requests&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Francesco\PycharmProjects\AntiPhish-LLM\evaluation\batches\requests" />
@@ -77,9 +69,9 @@
       <recent name="C:\Users\Francesco\PycharmProjects\AntiPhish-LLM" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Francesco\PycharmProjects\AntiPhish-LLM\evaluation\batches\requests" />
       <recent name="C:\Users\Francesco\PycharmProjects\AntiPhish-LLM\evaluation" />
       <recent name="C:\Users\Francesco\PycharmProjects\AntiPhish-LLM\evaluation\results\OLD" />
-      <recent name="C:\Users\Francesco\PycharmProjects\AntiPhish-LLM\evaluation\batches\requests" />
       <recent name="C:\Users\Francesco\PycharmProjects\AntiPhish-LLM\evaluation\batches\old_requests" />
       <recent name="C:\Users\Francesco\PycharmProjects\AntiPhish-LLM\evaluation\results\gpt-3.5-turbo-0125" />
     </key>
@@ -246,7 +238,9 @@
       <workItem from="1718864366628" duration="36000" />
       <workItem from="1718954525026" duration="11506000" />
       <workItem from="1719908167168" duration="4396000" />
-      <workItem from="1720166854863" duration="21722000" />
+      <workItem from="1720166854863" duration="27568000" />
+      <workItem from="1720369383080" duration="4565000" />
+      <workItem from="1720418606797" duration="2124000" />
     </task>
     <task id="LOCAL-00001" summary="Fix requirements.txt&#10;Fix model temperature">
       <created>1712049973373</created>
@@ -346,7 +340,23 @@
       <option name="project" value="LOCAL" />
       <updated>1718972260475</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Add noURL and URLQ_100 evaluations with GPT4o">
+      <option name="closed" value="true" />
+      <created>1720194319145</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1720194319145</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Add noURL and URLQ_100 evaluations with GPT4o">
+      <option name="closed" value="true" />
+      <created>1720194366667</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1720194366667</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -381,7 +391,8 @@
     <MESSAGE value="Add constant result file update, duplicate checker, auto retry" />
     <MESSAGE value="latest updates to code" />
     <MESSAGE value="Add batch requests support" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add batch requests support" />
+    <MESSAGE value="Add noURL and URLQ_100 evaluations with GPT4o" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add noURL and URLQ_100 evaluations with GPT4o" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -406,6 +417,6 @@
     <SUITE FILE_PATH="coverage/AntiPhish_LLM$url_enricher.coverage" NAME="url_enricher Coverage Results" MODIFIED="1718378968151" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AntiPhish_LLM$llm_prompter.coverage" NAME="llm_prompter Coverage Results" MODIFIED="1720183669864" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AntiPhish_LLM$dataset_polisher.coverage" NAME="dataset_polisher Coverage Results" MODIFIED="1713360970084" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../itasec-llm-phishing-detector" />
-    <SUITE FILE_PATH="coverage/AntiPhish_LLM$evaluation.coverage" NAME="evaluation Coverage Results" MODIFIED="1720194291500" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/evaluation" />
+    <SUITE FILE_PATH="coverage/AntiPhish_LLM$evaluation.coverage" NAME="evaluation Coverage Results" MODIFIED="1720378876504" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/evaluation" />
   </component>
 </project>

@@ -5,7 +5,7 @@ import os
 import pandas as pd
 from dotenv import load_dotenv
 import json
-from sklearn.metrics import precision_score, recall_score, accuracy_score, f1_score
+from sklearn.metrics import precision_score, recall_score, accuracy_score, f1_score, log_loss, roc_auc_score, brier_score_loss
 
 
 # gpt-4-1106-preview
@@ -19,11 +19,13 @@ from sklearn.metrics import precision_score, recall_score, accuracy_score, f1_sc
 
 # Set ENRICH_URL to True to create a batch of requests that include URL Info
 ENRICH_URL = True
-QUANTILE = 100
+QUANTILE = 0
 
 fieldnames = ["mail_id", "label", "prob", "true_label"]
 
+evaluations = ["noURL", "URL_Q=100", "URL_Q=75", "URL_Q=50", "URL_Q=25", "URL_Q=0"]
 batch_model = ""  # this is updated from the llm_prompter module
+
 
 def main():
     # get the emails from phishing.csv and legit.csv
@@ -153,7 +155,6 @@ def retrieve_results_choice():
 def produce_output_file_choice():
     base_path = os.path.join("batches", "results")
     batch_results = os.listdir(base_path)
-    evaluations = ["noURL", "URL_Q=100"]
 
     for eval_type in evaluations:
         results_df = pd.DataFrame(columns=fieldnames)
@@ -174,26 +175,48 @@ def compute_metrics_choice():
     results_path = "results"
     results_files = (file for file in os.listdir(results_path)
                      if os.path.isfile(os.path.join(results_path, file)))
-    evaluations = []
+    evaluation_types = []
     precisions = []
     recalls = []
     accuracies = []
     f1_scores = []
+    log_losses = []
+    roc_auc_scores = []
+    brier_score_losses = []
+
+    # Function to convert probabilities to float
+    def convert_prob(prob):
+        if isinstance(prob, str):
+            if prob.endswith('%'):
+                return float(prob.strip('%')) / 100.0
+            else:
+                return float(prob) / 100.0 if float(prob) > 1 else float(prob)
+        return prob
+
     for results_file in results_files:
         results_df = pd.read_csv(os.path.join(results_path, results_file), index_col=0)
-        evaluations.append(results_file.replace(".csv", ""))  # save the evaluation type (e.g., "noURL")
+        evaluation_types.append(results_file.replace(".csv", ""))  # save the evaluation type (e.g., "noURL")
         # Mapping labels to binary values
         results_df['predicted_label'] = results_df['label'].map({'legit': 0, 'phishing': 1})
+        # Apply the conversion function to the 'prob' column
+        results_df['prob'] = results_df['prob'].apply(convert_prob)
         # Extracting true and predicted labels
         y_true = results_df['true_label']
         y_pred = results_df['predicted_label']
+        y_prob = results_df['prob']
 
         # Calculate metrics
+        logloss = log_loss(y_true, y_prob)
+        roc_auc = roc_auc_score(y_true, y_prob)
+        brier_score = brier_score_loss(y_true, y_prob)
         precision = precision_score(y_true, y_pred)
         recall = recall_score(y_true, y_pred)
         accuracy = accuracy_score(y_true, y_pred)
         f1 = f1_score(y_true, y_pred)
 
+        log_losses.append(logloss)
+        roc_auc_scores.append(roc_auc)
+        brier_score_losses.append(brier_score)
         precisions.append(precision)
         recalls.append(recall)
         accuracies.append(accuracy)
@@ -201,11 +224,14 @@ def compute_metrics_choice():
 
     # Save the DataFrame to a CSV file
     metrics_df = pd.DataFrame({
-        'evaluation': evaluations,  # this holds the name of the evaluations (noURL, URL_Q=100, etc.)
+        'evaluation': evaluation_types,  # this holds the name of the evaluations (noURL, URL_Q=100, etc.)
         'precision': precisions,
         'recall': recalls,
         'accuracy': accuracies,
-        'f1_score': f1_scores
+        'f1_score': f1_scores,
+        'log_loss': log_losses,
+        'roc_auc': roc_auc_scores,
+        'brier_score': brier_score_losses
     })
     metrics_df.to_csv('metrics.csv', index=False)
     print("Metrics saved to", 'metrics.csv')
