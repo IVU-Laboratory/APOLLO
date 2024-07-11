@@ -18,8 +18,9 @@ from sklearn.metrics import precision_score, recall_score, accuracy_score, f1_sc
 # End index phishing = 2750
 
 # Set ENRICH_URL to True to create a batch of requests that include URL Info
-ENRICH_URL = True
+ENRICH_URL = False
 QUANTILE = 0
+FALSE_POSITIVES = True
 
 fieldnames = ["mail_id", "label", "prob", "true_label"]
 
@@ -260,7 +261,7 @@ def load_emails(csv_files):
             if ENRICH_URL:
                 # url_to_analyze = mail_urls[0]  # for now, we take the first URL
                 url_info = url_enricher.get_dummy_values(QUANTILE, mail["url_location"],
-                                                         mail["label"])  # url_enricher.get_url_info(url_to_analyze)
+                                                         mail["label"], FALSE_POSITIVES)  # url_enricher.get_url_info(url_to_analyze)
                 emails_df.iloc[i, emails_df.columns.get_loc("url_info")] = json.dumps(url_info)
     return emails_df
 

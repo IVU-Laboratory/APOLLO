@@ -160,18 +160,20 @@ def get_url_info(url_to_analyze, string_out=False):
         return url_info
 
 
-def get_dummy_values(percentile, location, label):
+def get_dummy_values(percentile, location, label, false_positive=False):
     percentile = 100 if percentile > 100 else percentile  # cap it at 100
-    if label == 1:  # "phishing"
+    if (label == 1 and not false_positive) or (label == 0 and false_positive):
+        # "phishing" case OR "legit" false positive case
         harmless_count = 0
         undetected_count = math.floor((100-percentile) + percentile * 0.05)
         malicious_count = math.floor(percentile * 0.95)
         n_blacklists_found = percentile  # percentile = 100% -> n_blacklists = 100, etc.
-    else:  # label == "legit"
+    else:  # if (label == 0 and not false_positive) or (label == 1 and false_positive):
+        # "legit" case OR "phishing" false positive case
         harmless_count = math.floor(percentile * 0.75)
         undetected_count = math.floor(percentile * 0.25 + (100-percentile))
         malicious_count = 0
-        n_blacklists_found = 0  # a genuine email will not be found in blacklists, despite the time
+        n_blacklists_found = 0  # a genuine email will not be found in blacklists, despite the percentile
     vt_data = {'malicious': malicious_count, 'undetected': undetected_count,
                'harmless': harmless_count}
 
