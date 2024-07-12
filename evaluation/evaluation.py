@@ -20,11 +20,12 @@ from sklearn.metrics import precision_score, recall_score, accuracy_score, f1_sc
 # Set ENRICH_URL to True to create a batch of requests that include URL Info
 ENRICH_URL = False
 QUANTILE = 0
-FALSE_POSITIVES = True
+FALSE_POSITIVES = False
 
 fieldnames = ["mail_id", "label", "prob", "true_label"]
 
-evaluations = ["noURL", "URL_Q=100", "URL_Q=75", "URL_Q=50", "URL_Q=25", "URL_Q=0"]
+evaluations = ["noURL", "URL_Q=100", "URL_Q=75", "URL_Q=50", "URL_Q=25", "URL_Q=0",
+               "URL_Q=100_FP", "URL_Q=75_FP", "URL_Q=50_FP", "URL_Q=25_FP"]
 batch_model = ""  # this is updated from the llm_prompter module
 
 
@@ -39,7 +40,7 @@ def main():
     input_command = None
     while input_command != "0":
         os.system('cls' if os.name == 'nt' else 'clear')
-        print(f"Evaluation set to URL_ENRICHER = {'true' if ENRICH_URL else 'false'}, QUANTILE = {QUANTILE}, model = {batch_model}.")
+        print(f"Evaluation set to URL_ENRICHER = {'true' if ENRICH_URL else 'false'}, QUANTILE = {QUANTILE}, model = {batch_model}, FALSE_POSITIVES = {'true' if FALSE_POSITIVES else 'false'}.")
         print("1. Generate batches\n2. Launch individual batch\n3. Launch ALL batches\n4. Retrieve pending results\n5. Save results to csv file\n6. Compute metrics\n0. Exit")
         input_command = input("Insert your choice (0-6): ")
         while input_command not in ["1", "2", "3", "4", "5", "6", "0"]:
@@ -62,9 +63,10 @@ def main():
 def generate_batches_choice(emails_df):
     retry = True
     while retry:  # Batch length input
-        batch_length = input("Insert batch length (default 50): ")
+        default_batch_length = 25
+        batch_length = input(f"Insert batch length (default {default_batch_length}): ")
         if batch_length == "":
-            batch_length = 50
+            batch_length = default_batch_length
         try:
             batch_length = int(batch_length)
             if batch_length > 0:
@@ -80,7 +82,7 @@ def generate_batches_choice(emails_df):
         start_index = i * batch_length
         end_index = start_index + batch_length
         if ENRICH_URL:
-            file_name = f"requests_URL_Q={str(QUANTILE)}_{start_index}-{end_index}.jsonl"
+            file_name = f"requests_URL_Q={str(QUANTILE)}_{start_index}-{end_index}{'_FP' if FALSE_POSITIVES and QUANTILE != 0 else ''}.jsonl"
         else:
             file_name = f"requests_noURL_{start_index}-{end_index}.jsonl"
         # Create the request only if we don't have the results yet and if it wasn't already generated
@@ -141,6 +143,7 @@ def retrieve_results_choice():
     # if batch_id is None:  # if there is no batch ID set, ask it to the user
     #    batch_id = input("Enter the batch ID (found in the batch_info.txt file):")
     batches_info = llm_prompter.get_batches_info()
+    print(f"Retrieving {len(batches_info)} results, fetched from batch_info.jsonl")
     for batch_id, batch_name in batches_info:
         batch_name = batch_name.replace(".jsonl", ".csv")  # change the extension of the results file
         results_file = os.path.join("batches", "results", batch_name)
@@ -149,27 +152,54 @@ def retrieve_results_choice():
             if file_id is not None:  # if the process executed successfully
                 # Retrieve the results
                 batch_output = llm_prompter.retrieve_batch_results(file_id)
-                results = read_batch_putput_file(batch_output)
+                results = read_batch_output_file(batch_output)
                 results.to_csv(results_file)
 
 
 def produce_output_file_choice():
     base_path = os.path.join("batches", "results")
     batch_results = os.listdir(base_path)
+    aggregate_results_classification_df = pd.DataFrame(columns=["condition", "outcome"])
+    aggregate_results_regression_df = pd.DataFrame(columns=["condition", "prob"])
 
+    # Function to convert probabilities to float
+    def convert_prob(prob):
+        if isinstance(prob, str):
+            if prob.endswith('%'):
+                prob = prob.strip('%')
+            prob = float(prob)
+        prob = prob / 100.0 if prob > 1 else prob
+        return prob
     for eval_type in evaluations:
         results_df = pd.DataFrame(columns=fieldnames)
         # take the results of the batches and store them in a single dataframe
         for batch_file in batch_results:
-            if re.search(eval_type, batch_file) is not None:  # check if the name matches
+            if re.search(eval_type+r"_\d+-\d+", batch_file) is not None:  # check if the name matches
                 partial_df = pd.read_csv(os.path.join(base_path, batch_file), index_col=0)
                 results_df = pd.concat([results_df, partial_df],
                                        ignore_index=True)  # add the results of the batch to the tot
-        # write results to a file
+        if len(results_df) != 4000:
+            print(f"Length is different from datasets' {len(results_df)}")
+        # Apply the conversion function to the 'prob' column
+        results_df['prob'] = results_df['prob'].apply(convert_prob)
+        # convert the column label to 0s or 1s
+        results_df['label'] = results_df['label'].map({'phishing': 1, 'legit': 0})
+        # write results to file
         output_file = os.path.join("results", eval_type + ".csv")
         with open(output_file, "w", newline="\n") as results:
             results_df.to_csv(results)
             print("Results saved to", output_file)
+        results_df["outcome"] = results_df["label"] == results_df["true_label"]
+        results_df["condition"] = eval_type
+        results_df["outcome"] = results_df["label"] == results_df["true_label"]
+        aggregate_results_classification_df = pd.concat([aggregate_results_classification_df,
+                                                         results_df[['condition', 'outcome']]])
+        aggregate_results_regression_df = pd.concat([aggregate_results_regression_df,
+                                                     results_df[['condition', 'prob']]])
+    with open(os.path.join("predicted_labels.csv"), 'w', newline='\n') as out_file:
+        aggregate_results_classification_df.to_csv(out_file)
+    with open(os.path.join("predicted_probabilities.csv"), 'w', newline='\n') as out_file:
+        aggregate_results_regression_df.to_csv(out_file)
 
 
 def compute_metrics_choice():
@@ -185,43 +215,32 @@ def compute_metrics_choice():
     roc_auc_scores = []
     brier_score_losses = []
 
-    # Function to convert probabilities to float
-    def convert_prob(prob):
-        if isinstance(prob, str):
-            if prob.endswith('%'):
-                return float(prob.strip('%')) / 100.0
-            else:
-                return float(prob) / 100.0 if float(prob) > 1 else float(prob)
-        return prob
-
     for results_file in results_files:
         results_df = pd.read_csv(os.path.join(results_path, results_file), index_col=0)
-        evaluation_types.append(results_file.replace(".csv", ""))  # save the evaluation type (e.g., "noURL")
-        # Mapping labels to binary values
-        results_df['predicted_label'] = results_df['label'].map({'legit': 0, 'phishing': 1})
-        # Apply the conversion function to the 'prob' column
-        results_df['prob'] = results_df['prob'].apply(convert_prob)
-        # Extracting true and predicted labels
-        y_true = results_df['true_label']
-        y_pred = results_df['predicted_label']
-        y_prob = results_df['prob']
+        if len(results_df) > 0:
+            evaluation_types.append(results_file.replace(".csv", ""))  # save the evaluation type (e.g., "noURL")
+            # Mapping labels to binary values
+            # Extracting true and predicted labels
+            y_true = results_df['true_label']
+            y_pred = results_df['label']
+            y_prob = results_df['prob']
 
-        # Calculate metrics
-        logloss = log_loss(y_true, y_prob)
-        roc_auc = roc_auc_score(y_true, y_prob)
-        brier_score = brier_score_loss(y_true, y_prob)
-        precision = precision_score(y_true, y_pred)
-        recall = recall_score(y_true, y_pred)
-        accuracy = accuracy_score(y_true, y_pred)
-        f1 = f1_score(y_true, y_pred)
+            # Calculate metrics
+            logloss = log_loss(y_true, y_prob)
+            roc_auc = roc_auc_score(y_true, y_prob)
+            brier_score = brier_score_loss(y_true, y_prob)
+            precision = precision_score(y_true, y_pred)
+            recall = recall_score(y_true, y_pred)
+            accuracy = accuracy_score(y_true, y_pred)
+            f1 = f1_score(y_true, y_pred)
 
-        log_losses.append(logloss)
-        roc_auc_scores.append(roc_auc)
-        brier_score_losses.append(brier_score)
-        precisions.append(precision)
-        recalls.append(recall)
-        accuracies.append(accuracy)
-        f1_scores.append(f1)
+            log_losses.append(logloss)
+            roc_auc_scores.append(roc_auc)
+            brier_score_losses.append(brier_score)
+            precisions.append(precision)
+            recalls.append(recall)
+            accuracies.append(accuracy)
+            f1_scores.append(f1)
 
     # Save the DataFrame to a CSV file
     metrics_df = pd.DataFrame({
@@ -266,23 +285,7 @@ def load_emails(csv_files):
     return emails_df
 
 
-def load_already_classified_emails(enrich_url):
-    if enrich_url:
-        file_name = os.path.join('results', 'url_enriched_' + str(QUANTILE) + '.csv')
-    else:
-        file_name = os.path.join('results', 'no_url_enriched.csv')
-
-    if os.path.exists(file_name):
-        y_results = pd.read_csv(file_name, names=fieldnames)
-    else:
-        y_results = pd.DataFrame(columns=fieldnames)  # empty dataframe
-    # else:
-    #    open(url_enriched_file, 'a')  # create empty file
-    #    y_results_url = pd.DataFrame(columns=fieldnames)
-    return y_results
-
-
-def read_batch_putput_file(batch_result):
+def read_batch_output_file(batch_result):
     lines = str.split(batch_result, "\n")  # get the individual lines of the jsonl results file in response
     results = []
     for line in lines:
