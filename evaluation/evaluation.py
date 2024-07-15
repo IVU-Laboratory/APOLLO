@@ -24,8 +24,9 @@ FALSE_POSITIVES = False
 
 fieldnames = ["mail_id", "label", "prob", "true_label"]
 
-evaluations = ["noURL", "URL_Q=100", "URL_Q=75", "URL_Q=50", "URL_Q=25", "URL_Q=0",
-               "URL_Q=100_FP", "URL_Q=75_FP", "URL_Q=50_FP", "URL_Q=25_FP"]
+#evaluations = ["noURL", "URL_Q=100", "URL_Q=75", "URL_Q=50", "URL_Q=25", "URL_Q=0",
+#               "URL_Q=100_FP", "URL_Q=75_FP", "URL_Q=50_FP", "URL_Q=25_FP"]
+evaluations = ["noURL_1", "noURL_2", "noURL_3", "noURL_4", "noURL_5"]
 batch_model = ""  # this is updated from the llm_prompter module
 
 
@@ -156,6 +157,15 @@ def retrieve_results_choice():
                 results.to_csv(results_file)
 
 
+def convert_prob(prob):
+    if isinstance(prob, str):
+        if prob.endswith('%'):
+            prob = prob.strip('%')
+        prob = float(prob)
+    prob = prob / 100.0 if prob > 1 else prob
+    return prob
+
+
 def produce_output_file_choice():
     base_path = os.path.join("batches", "results")
     batch_results = os.listdir(base_path)
@@ -163,13 +173,7 @@ def produce_output_file_choice():
     aggregate_results_regression_df = pd.DataFrame(columns=["condition", "prob"])
 
     # Function to convert probabilities to float
-    def convert_prob(prob):
-        if isinstance(prob, str):
-            if prob.endswith('%'):
-                prob = prob.strip('%')
-            prob = float(prob)
-        prob = prob / 100.0 if prob > 1 else prob
-        return prob
+
     for eval_type in evaluations:
         results_df = pd.DataFrame(columns=fieldnames)
         # take the results of the batches and store them in a single dataframe
@@ -179,7 +183,7 @@ def produce_output_file_choice():
                 results_df = pd.concat([results_df, partial_df],
                                        ignore_index=True)  # add the results of the batch to the tot
         if len(results_df) != 4000:
-            print(f"Length is different from datasets' {len(results_df)}")
+            input(f"Length is different from datasets' {len(results_df)}. Press a key to continue...")
         # Apply the conversion function to the 'prob' column
         results_df['prob'] = results_df['prob'].apply(convert_prob)
         # convert the column label to 0s or 1s
@@ -224,7 +228,7 @@ def compute_metrics_choice():
             y_true = results_df['true_label']
             y_pred = results_df['label']
             y_prob = results_df['prob']
-
+            y_prob = y_prob.apply(convert_prob)  # correct any error in the probabilities
             # Calculate metrics
             logloss = log_loss(y_true, y_prob)
             roc_auc = roc_auc_score(y_true, y_prob)
