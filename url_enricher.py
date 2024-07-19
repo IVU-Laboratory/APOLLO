@@ -118,7 +118,7 @@ def get_dns_info(url):
     }
     request_url = api_base_url
     try:
-        response = requests.get(request_url, params=get_params) # Make the HTTP GET request
+        response = requests.get(request_url, params=get_params)  # Make the HTTP GET request
 
         # Check for a successful response (HTTP status code 200)
         if response.status_code == 200:
@@ -189,4 +189,3 @@ if __name__ == "__main__":
     print(url)
     r = get_virustotal_data(url)
     print(r)
-

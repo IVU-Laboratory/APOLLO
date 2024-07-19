@@ -169,10 +169,6 @@ def convert_prob(prob):
 def produce_output_file_choice():
     base_path = os.path.join("batches", "results")
     batch_results = os.listdir(base_path)
-    aggregate_results_classification_df = pd.DataFrame(columns=["condition", "outcome"])
-    aggregate_results_regression_df = pd.DataFrame(columns=["condition", "prob"])
-
-    # Function to convert probabilities to float
 
     for eval_type in evaluations:
         results_df = pd.DataFrame(columns=fieldnames)
@@ -196,14 +192,6 @@ def produce_output_file_choice():
         results_df["outcome"] = results_df["label"] == results_df["true_label"]
         results_df["condition"] = eval_type
         results_df["outcome"] = results_df["label"] == results_df["true_label"]
-        aggregate_results_classification_df = pd.concat([aggregate_results_classification_df,
-                                                         results_df[['condition', 'outcome']]])
-        aggregate_results_regression_df = pd.concat([aggregate_results_regression_df,
-                                                     results_df[['condition', 'prob']]])
-    with open(os.path.join("predicted_labels.csv"), 'w', newline='\n') as out_file:
-        aggregate_results_classification_df.to_csv(out_file)
-    with open(os.path.join("predicted_probabilities.csv"), 'w', newline='\n') as out_file:
-        aggregate_results_regression_df.to_csv(out_file)
 
 
 def compute_metrics_choice():
@@ -218,11 +206,15 @@ def compute_metrics_choice():
     log_losses = []
     roc_auc_scores = []
     brier_score_losses = []
+    aggregate_results_classification_df = pd.DataFrame(columns=["condition", "outcome"])
+    aggregate_results_regression_df = pd.DataFrame(columns=["condition", "prob"])
 
     for results_file in results_files:
         results_df = pd.read_csv(os.path.join(results_path, results_file), index_col=0)
         if len(results_df) > 0:
-            evaluation_types.append(results_file.replace(".csv", ""))  # save the evaluation type (e.g., "noURL")
+            condition = results_file.replace(".csv", "")
+            evaluation_types.append(condition)  # save the evaluation type (e.g., "noURL")
+            results_df["condition"] = condition
             # Mapping labels to binary values
             # Extracting true and predicted labels
             y_true = results_df['true_label']
@@ -245,7 +237,10 @@ def compute_metrics_choice():
             recalls.append(recall)
             accuracies.append(accuracy)
             f1_scores.append(f1)
-
+            aggregate_results_classification_df = pd.concat([aggregate_results_classification_df,
+                                                             results_df[['condition', 'outcome']]])
+            aggregate_results_regression_df = pd.concat([aggregate_results_regression_df,
+                                                         results_df[['condition', 'prob']]])
     # Save the DataFrame to a CSV file
     metrics_df = pd.DataFrame({
         'evaluation': evaluation_types,  # this holds the name of the evaluations (noURL, URL_Q=100, etc.)
@@ -259,6 +254,9 @@ def compute_metrics_choice():
     })
     metrics_df.to_csv('metrics.csv', index=False)
     print("Metrics saved to", 'metrics.csv')
+    aggregate_results_classification_df.to_csv("predicted_labels.csv")
+    aggregate_results_regression_df.to_csv("predicted_probabilities.csv")
+
 
 
 def load_emails(csv_files):
@@ -321,6 +319,7 @@ def read_batch_output_file(batch_result):
 
 if __name__ == "__main__":
     main()
+
 
 """
 def add_missing_records_to_no_url_enriched_file():
