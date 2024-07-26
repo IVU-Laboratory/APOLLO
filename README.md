@@ -1,4 +1,4 @@
-AntiPhish-LLM is a tool written in Python 3.10.12 and powered by GPT-4o ([gpt-4o-2024-13-5]([url](https://platform.openai.com/docs/models/gpt-4o))) to:
+APOLLO (Advanced Phishing preventiOn with Large Language model-based Oracle) is a tool written in Python 3.10.12 and powered by GPT-4o ([gpt-4o-2024-13-5]([url](https://platform.openai.com/docs/models/gpt-4o))) to:
 - **classify** an email as **phishing** or legitimate, and
 - **generate an explanation** for the user in the case of a phishing email.
 
