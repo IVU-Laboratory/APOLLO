@@ -4,19 +4,14 @@ import openai
 import json
 import os
 import asyncio
-# from g4f.client import Client
-from g4f.Provider import RetryProvider, Bing, Phind, FreeChatgpt, Liaobots, You, Llama, Theb
+
 
 SEED = 42
-MODEL = "gpt-4o-2024-05-13"  # "gpt-4"  # "gpt-3.5-turbo-1106"
+MODEL = "gpt-4o-2024-05-13"
 MODEL_BATCH = "gpt-4o-2024-05-13"
 TEMPERATURE = 0.0001
 
-# Set a global client for GPT4free
-asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-"""client = Client(
-    provider=RetryProvider([Bing, Phind, FreeChatgpt, You, Llama, Theb], shuffle=False)  # https://github.com/xtekky/gpt4free
-)"""
+# Set a global client for GPT
 global client
 
 
@@ -33,8 +28,7 @@ def classify_email(email_input, feature_to_explain=None, url_info=None, explanat
         to make more informed decisions.
         The user will submit the email (headers + subject + body) optionally accompanied by information of the URLs in the email as:
         - server location;
-        - VirusTotal scans reporting the number of scanners that detected the URL as harmless;
-        - number of blacklists in which the linked domain was found.
+        - VirusTotal scans reporting the number of scanners that detected the URL as harmless.
 
         Your goal is to output a JSON object containing:
         - The classification result (label).
@@ -79,7 +73,6 @@ def classify_email(email_input, feature_to_explain=None, url_info=None, explanat
 
     messages.append({"role": "user", "content": email_prompt})
     # Get the classification response
-    # client = Client()
     response = client.chat.completions.create(
         model=model,
         seed=SEED,
@@ -170,8 +163,7 @@ def classify_email_minimal(email_input, url_info=None, model=MODEL):
            to make more informed decisions.
            The user will submit the email (headers + subject + body) optionally accompanied by information of the URLs in the email as:
            - server location;
-           - VirusTotal scans reporting the number of scanners that detected the URL as harmless, undetected, suspicious, malicious;
-           - number of blacklists in which the linked domain was found.\n
+           - VirusTotal scans reporting the number of scanners that detected the URL as harmless, undetected, suspicious, malicious.\n
            Your goal is to output a JSON object containing:
            - The classification result (label).
            - The probability in percentage of the email being phishing (0%=email is surely legitimate, 100%=email is surely phishing) (phishing_probability).\n
@@ -245,8 +237,7 @@ def generate_batch_requests_file(emails_df, file_name):
            to make more informed decisions.
            The user will submit the email (headers + subject + body) optionally accompanied by information of the URLs in the email as:
            - server location;
-           - VirusTotal scans reporting the number of scanners that detected the URL as harmless, undetected, suspicious, malicious;
-           - number of blacklists in which the linked domain was found.\n
+           - VirusTotal scans reporting the number of scanners that detected the URL as harmless, undetected, suspicious, malicious.\n
            Your goal is to output a JSON object containing:
            - The classification result (label).
            - The probability in percentage of the email being phishing (0%=email is surely legitimate, 100%=email is surely phishing) (phishing_probability).\n
@@ -395,24 +386,3 @@ def get_batches_info():
         data = [json.loads(line) for line in info_file]
         batches = [(b["batch_id"], b["local_file_name"]) for b in data]
         return batches
-
-
-"""try:
-    response = content.response.text
-    lines = str.split(response, "\n")  # get the indiviudal lines of the jsonl results file in response
-    results = []
-    for line in lines:
-        if :
-            json_object = json.loads(line)
-            try:
-                model_response = json_object["response"]["body"]["choices"][0]["message"]["content"]
-                model_response = json.loads(model_response)
-                result = {}
-                results.append(result)
-            except json.decoder.JSONDecodeError as e:
-                print(e)
-                continue
-    return results
-except Exception as e:
-    print(e)
-    return []"""

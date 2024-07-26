@@ -10,15 +10,6 @@ import json
 from sklearn.metrics import precision_score, recall_score, accuracy_score, f1_score, log_loss, roc_auc_score, brier_score_loss
 
 
-# gpt-4-1106-preview
-# No URL
-# End index legit = 1726
-# End index phishing = 3230
-
-# With URL
-# End index legit = 735
-# End index phishing = 2750
-
 # Set ENRICH_URL to True to create a batch of requests that include URL Info
 ENRICH_URL = False
 QUANTILE = 0
@@ -26,9 +17,8 @@ FALSE_POSITIVES = False
 
 fieldnames = ["mail_id", "label", "prob", "true_label"]
 
-#evaluations = ["noURL", "URL_Q=100", "URL_Q=75", "URL_Q=50", "URL_Q=25", "URL_Q=0",
-#               "URL_Q=100_FP", "URL_Q=75_FP", "URL_Q=50_FP", "URL_Q=25_FP"]
-evaluations = ["noURL_1", "noURL_2", "noURL_3", "noURL_4", "noURL_5"]
+evaluations = ["noURL", "URL_Q=100", "URL_Q=75", "URL_Q=50", "URL_Q=25", "URL_Q=0",
+               "URL_Q=100_FP", "URL_Q=75_FP", "URL_Q=50_FP", "URL_Q=25_FP" "noURL_2", "noURL_3", "noURL_4", "noURL_5"]
 batch_model = ""  # this is updated from the llm_prompter module
 
 
@@ -320,22 +310,3 @@ def read_batch_output_file(batch_result):
 if __name__ == "__main__":
     main()
 
-
-"""
-def add_missing_records_to_no_url_enriched_file():
-    # Read the CSV files into pandas DataFrames
-    no_url_df = pd.read_csv("no_url_enriched.csv")
-    url_df = pd.read_csv("url_enriched.csv")
-
-    # Find mail_ids present in no_url_df but missing in url_df
-    missing_mail_ids = set(no_url_df['mail_id']) - set(url_df['mail_id'])
-
-    # Filter rows from no_url_df where mail_id is in missing_mail_ids
-    filtered_rows = no_url_df[no_url_df['mail_id'].isin(missing_mail_ids)]
-
-    # Append the filtered rows to url_df and write to a new file url_enriched.csv
-    url_df = url_df.append(filtered_rows)
-
-    # Write the updated DataFrame to a new CSV file
-    url_df.to_csv("url_enriched.csv", index=False)
-"""

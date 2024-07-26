@@ -81,29 +81,6 @@ def get_virustotal_data(url):
         return "Unknown"
 
 
-# Blackist Checker API
-def get_blacklists_data(url):
-    blacklist_api_key = os.getenv("BLACKLIST_API")  # Blacklist Checker API key - https://blacklistchecker.com/
-    api_base_url = "https://api.blacklistchecker.com/"
-    request_url = api_base_url + "check/" + url
-    try:
-        response = requests.get(request_url, auth=(blacklist_api_key, ""))  # Make the HTTP GET request
-
-        # Check for a successful response (HTTP status code 200)
-        if response.status_code == 200:
-            # Access the JSON response
-            result = response.json()
-        else:
-            print(f"BlacklistChecker Request failed with status code: {response.status_code}")
-            result = {"detections": "Unknown"}
-        n_blacklists_found = result["detections"]  # The detections field simply carries the number of blacklists in which the domain appeared
-
-        response.close() # Close the response
-        return n_blacklists_found
-    except:
-        return "Unknown"
-
-
 # BigDataCloud API (get location of IP address)
 def get_dns_info(url):
     dns_api_key = os.getenv("DNS_API")  # BigDataCloud API key - https://www.bigdatacloud.com/
@@ -144,15 +121,13 @@ def get_dns_info(url):
 
 def get_url_info(url_to_analyze, string_out=False):
     url_fullhostname = get_fullhostname(url_to_analyze)  # gets the full host name (protocol + fqdn), w/o the URL path
-    url = get_hostname(url_to_analyze)
+    # url = get_hostname(url_to_analyze)
     vt_data = get_virustotal_data(url_fullhostname)
     domain_location = get_dns_info(url_fullhostname)
-    n_blacklists_found = get_blacklists_data(url)
 
     url_info = {
         'Server location': domain_location,
-        'VirusTotal scan': vt_data,
-        'Blacklists': n_blacklists_found
+        'VirusTotal scan': vt_data
     }
     if string_out:
         return str(url_info)
@@ -167,25 +142,15 @@ def get_dummy_values(percentile, location, label, false_positive=False):
         harmless_count = 0
         undetected_count = math.floor((100-percentile) + percentile * 0.05)
         malicious_count = math.floor(percentile * 0.95)
-        n_blacklists_found = percentile  # percentile = 100% -> n_blacklists = 100, etc.
     else:  # if (label == 0 and not false_positive) or (label == 1 and false_positive):
         # "legit" case OR "phishing" false positive case
         harmless_count = math.floor(percentile * 0.75)
         undetected_count = math.floor(percentile * 0.25 + (100-percentile))
         malicious_count = 0
-        n_blacklists_found = 0  # a genuine email will not be found in blacklists, despite the percentile
     vt_data = {'malicious': malicious_count, 'undetected': undetected_count,
                'harmless': harmless_count}
 
     return {
         'Server location': location,
-        'VirusTotal scan': vt_data,
-        'Blacklists': n_blacklists_found
+        'VirusTotal scan': vt_data
     }
-
-
-if __name__ == "__main__":
-    url = get_fullhostname("http://jssystems.com.bo//bac/jssystems_/it/")
-    print(url)
-    r = get_virustotal_data(url)
-    print(r)
