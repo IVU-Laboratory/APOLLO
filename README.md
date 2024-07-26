@@ -4,9 +4,9 @@ APOLLO (Advanced Phishing preventiOn with Large Language model-based Oracle) is 
 
 The tool is accessible by using the _main.py_ script and is composed of three modules: _preprocessor.py_ (which preprocesses emails), _url_enricher.py_ (which gathers online information about any URLs in emails), and _llm_prompter.py_ (which interacts with GPT-4o).
 
-A demo of the tool is also available as a Jupyter notebook in the file _AntiPhish_LLM.ipynb_.
+A demo of the tool is also available as a Jupyter notebook in the file _APOLLO.ipynb_.
 
-AntiPhish-LLM takes in input an email in _.eml format_ and, thanks to the preprocessor module, removes any HTML tag and saves information about the links in the email (as done in [1]). To overcome the knowledge cut-off of GPT-4o, we enriched the link with online information. Specifically, we query the VirusTotal API to check if the link is malicious and BigDataCloud to see the server location, useful for the explanation phase. Finally, the email link and this additional information are used to fill in two templates of GPT-4o prompts, which allow AntiPhish-LLM to classify the email and generate the explanation. 
+APOLLO takes in input an email in _.eml format_ and, thanks to the preprocessor module, removes any HTML tag and saves information about the links in the email (as done in [1]). To overcome the knowledge cut-off of GPT-4o, we enriched the link with online information. Specifically, we query the VirusTotal API to check if the link is malicious and BigDataCloud to see the server location, useful for the explanation phase. Finally, the email link and this additional information are used to fill in two templates of GPT-4o prompts, which allow APOLLO to classify the email and generate the explanation. 
 
 The core of the tool is the set of the GPT-4o prompts, thus we devoted particular care to manually designing and iteratively refining them according to the best practices of prompt-engineering [2-4]. Notably, we followed a few-shot prompting approach, as also suggested by OpenAI [4]. The generated explanations follow the structure defined in [5]: “Feature description + Hazard Explanation + Consequences of not complying with the warning”. This structure is grounded on warning theory for the design of warning messages [6]. Moreover, the generated explanations revolve around a set of email features that are valuable for users in making decisions regarding phishing content [5,7] i.e., are:
 
@@ -24,7 +24,7 @@ Specifically, the _results_ subfolder contains:
 - the results of the analysis conducted on VirusTotal ("VirusTotal ranges").  
 
 In the _Warning evaluation_ folder there are all the files related to the user study conducted to evaluate the warning 
-dialogs produced by AntiPhish-LLM. Specifically: 
+dialogs produced by APOLLO. Specifically: 
 - In the file _emails+warnings.zip_ are stored the emails (in .html format) to which users in the study "Can LLMs help protect users from phishing attacks? An exploratory study" were exposed, together with the warnings shown (in .png format). Warnings are named WX.png, where X is the experimental condition (from 1 to 4); emails name include the warning name to match them with the warnings that were shown together.
 
 - The "_Baseline Comparison - Stat test details.xls_" file contains the results of the statistical comparison performed between our 4 experimental conditions (W1-W4) and the 4 baselines (manual explanation + chrome + edge + firefox).
