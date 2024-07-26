@@ -6,7 +6,7 @@ The tool is accessible by using the _main.py_ script and is composed of three mo
 
 A demo of the tool is also available as a Jupyter notebook in the file _AntiPhish_LLM.ipynb_.
 
-  AntiPhish-LLM takes in input an email in _.eml format_ and, thanks to the preprocessor module, removes any HTML tag and saves information about the links in the email (as done in [1]). To overcome the knowledge cut-off of GPT-4o, we enriched the link with online information. Specifically, we query the VirusTotal API to check if the link is malicious and BigDataCloud to see the server location, useful for the explanation phase. Finally, the email link and this additional information are used to fill in two templates of GPT-4o prompts, which allow AntiPhish-LLM to classify the email and generate the explanation. 
+AntiPhish-LLM takes in input an email in _.eml format_ and, thanks to the preprocessor module, removes any HTML tag and saves information about the links in the email (as done in [1]). To overcome the knowledge cut-off of GPT-4o, we enriched the link with online information. Specifically, we query the VirusTotal API to check if the link is malicious and BigDataCloud to see the server location, useful for the explanation phase. Finally, the email link and this additional information are used to fill in two templates of GPT-4o prompts, which allow AntiPhish-LLM to classify the email and generate the explanation. 
 
 The core of the tool is the set of the GPT-4o prompts, thus we devoted particular care to manually designing and iteratively refining them according to the best practices of prompt-engineering [2-4]. Notably, we followed a few-shot prompting approach, as also suggested by OpenAI [4]. The generated explanations follow the structure defined in [5]: “Feature description + Hazard Explanation + Consequences of not complying with the warning”. This structure is grounded on warning theory for the design of warning messages [6]. Moreover, the generated explanations revolve around a set of email features that are valuable for users in making decisions regarding phishing content [5,7] i.e., are:
 
@@ -33,7 +33,7 @@ dialogs produced by AntiPhish-LLM. Specifically:
 
 ### References
 
-[1] Misra, K. and Rayz, J. T.. 2022. LMs go Phishing: Adapting Pre-trained Language Models to Detect Phishing Email.
+[1] Misra, K. and Rayz, J. T. 2022. LMs go Phishing: Adapting Pre-trained Language Models to Detect Phishing Email.
 
 [2] Liu, P., Yuan, Q., Fu, J., Jiang, Z., Hayashi, H. and Neubig, G. 2023. Pre-train, Prompt, and Predict: A Systematic Survey of Prompting Methods in Natural Language Processing.ACM Comput. Surv., 55, 9, Article 195. https://doi.org/10.1145/3560815
 
