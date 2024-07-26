@@ -1,4 +1,6 @@
 import re
+import time
+
 import url_enricher
 import llm_prompter
 import os
@@ -41,8 +43,9 @@ def main():
     input_command = None
     while input_command != "0":
         os.system('cls' if os.name == 'nt' else 'clear')
-        print(f"Evaluation set to URL_ENRICHER = {'true' if ENRICH_URL else 'false'}, QUANTILE = {QUANTILE}, model = {batch_model}, FALSE_POSITIVES = {'true' if FALSE_POSITIVES else 'false'}.")
-        print("1. Generate batches\n2. Launch individual batch\n3. Launch ALL batches\n4. Retrieve pending results\n5. Save results to csv file\n6. Compute metrics\n0. Exit")
+        print(f"Evaluation set to URL_ENRICHER = {'true' if ENRICH_URL else 'false'}, QUANTILE = {QUANTILE}, model = {batch_model}.")
+        print("1. Generate batches\n2. Launch individual batch\n3. Launch ALL batches\n4. Retrieve pending results\n"
+              "5. Save results to csv file\n6. Compute metrics\n0. Exit")
         input_command = input("Insert your choice (0-6): ")
         while input_command not in ["1", "2", "3", "4", "5", "6", "0"]:
             input_command = input("Insert a valid command (0-6): ")
@@ -63,11 +66,10 @@ def main():
 
 def generate_batches_choice(emails_df):
     retry = True
+    default_batch_length = 25
+    batch_length = default_batch_length
     while retry:  # Batch length input
-        default_batch_length = 25
         batch_length = input(f"Insert batch length (default {default_batch_length}): ")
-        if batch_length == "":
-            batch_length = default_batch_length
         try:
             batch_length = int(batch_length)
             if batch_length > 0:
@@ -144,7 +146,6 @@ def retrieve_results_choice():
     # if batch_id is None:  # if there is no batch ID set, ask it to the user
     #    batch_id = input("Enter the batch ID (found in the batch_info.txt file):")
     batches_info = llm_prompter.get_batches_info()
-    print(f"Retrieving {len(batches_info)} results, fetched from batch_info.jsonl")
     for batch_id, batch_name in batches_info:
         batch_name = batch_name.replace(".jsonl", ".csv")  # change the extension of the results file
         results_file = os.path.join("batches", "results", batch_name)
@@ -256,7 +257,6 @@ def compute_metrics_choice():
     print("Metrics saved to", 'metrics.csv')
     aggregate_results_classification_df.to_csv("predicted_labels.csv")
     aggregate_results_regression_df.to_csv("predicted_probabilities.csv")
-
 
 
 def load_emails(csv_files):

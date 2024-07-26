@@ -50,7 +50,7 @@ def get_preprocessed_dataset(dataset_name):
     for mail_id in range(0, len(df)):
         e = df.iloc[mail_id]
         if isinstance(e["body"], str):
-            body, urls = preprocessor.preprocessURLsPlainText(str(e["body"]))
+            body, urls = preprocessor.preprocessURLsPlainText(str(e["body"]), truncate_URLs=False)
             headers = "To: " + str(e["receiver"]) + "\nFrom: " + str(e["sender"]) + "\nDate: " + str(e["date"])
             df.iloc[mail_id, df.columns.get_loc("body")] = body.replace('\n', '\\n')
             df.iloc[mail_id, df.columns.get_loc("urls")] = " ".join(urls)  # put the list in a single string
@@ -74,6 +74,7 @@ def get_preprocessed_dataset(dataset_name):
 def get_df_with_geolocation(emails_df):
     # emails_df = df.copy(deep=False)
     emails_df["url_location"] = ""
+    """
     for i in range(0, len(emails_df)):
         mail = emails_df.iloc[i]
         mail_urls = [] if len(mail["urls"]) == 0 else mail["urls"].split(" ")  # explode the string into a list
@@ -87,6 +88,7 @@ def get_df_with_geolocation(emails_df):
             print(f"-- Mail {i}, analyzing URL: {url_fullhostname}")
             domain_location = get_dns_info(url_fullhostname)
             emails_df.iloc[i, emails_df.columns.get_loc("url_location")] = domain_location
+    """
     return emails_df
 
 

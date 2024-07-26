@@ -58,7 +58,7 @@ def get_virustotal_data(url):
     vt_api_key = os.getenv("VT_API")  # VirusTotal API key - https://www.virustotal.com/gui/home/upload
     # Headers with the API key
     headers = {
-        'x-apikey': "02c720cb6e04487edb6384c18bb663da3667ca6e8f79925682d82e700f5ddae9",
+        'x-apikey': vt_api_key,
     }
     base_64_url = base64.b64encode(url.encode('ascii')) # encode the url in base64 bytes
     base_64_url = base_64_url.decode("ascii")  # get the base64 string
@@ -75,7 +75,7 @@ def get_virustotal_data(url):
         else:
             print(f"VirusTotal Request failed with status code: {response.status_code}")
             vt_data = "Unknown"
-        response.close() # Close the response
+        response.close()  # Close the response
         return vt_data
     except:
         return "Unknown"
