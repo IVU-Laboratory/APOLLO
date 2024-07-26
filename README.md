@@ -1,14 +1,14 @@
-AntiPhish-LLM is a tool written in Python 3.10.12 and powered by GPT-4-turbo ([gpt-4-1106-preview]([url](https://help.openai.com/en/articles/8555510-gpt-4-turbo))) to:
+AntiPhish-LLM is a tool written in Python 3.10.12 and powered by GPT-4o ([gpt-4o-2024-13-5]([url](https://platform.openai.com/docs/models/gpt-4o))) to:
 - **classify** an email as **phishing** or legitimate, and
 - **generate an explanation** for the user in the case of a phishing email.
 
-The tool is accessible by using the _main.py_ script and is composed of three modules: _preprocessor.py_ (which preprocesses emails), _url_enricher.py_ (which gathers online information about any URLs in emails), and _llm_prompter.py_ (which interacts with GPT-4).
+The tool is accessible by using the _main.py_ script and is composed of three modules: _preprocessor.py_ (which preprocesses emails), _url_enricher.py_ (which gathers online information about any URLs in emails), and _llm_prompter.py_ (which interacts with GPT-4o).
 
 A demo of the tool is also available as a Jupyter notebook in the file _AntiPhish_LLM.ipynb_.
 
-AntiPhish-LLM takes in input an email in _.eml format_ and, thanks to the preprocessor module, removes any HTML tag and saves information about the links in the email (as done in [1]). To overcome the knowledge cut-off of GPT-4, we enriched the link with online information. Specifically, we query the VirusTotal and BlackListChecker APIs to see if the link is malicious, and BigDataCloud to see the server location, useful for the explanation phase. Finally, the email link and this additional information are used to fill in two templates of GPT-4 prompts, which allow AntiPhish-LLM to classify the email and generate the explanation. 
+  AntiPhish-LLM takes in input an email in _.eml format_ and, thanks to the preprocessor module, removes any HTML tag and saves information about the links in the email (as done in [1]). To overcome the knowledge cut-off of GPT-4o, we enriched the link with online information. Specifically, we query the VirusTotal API to check if the link is malicious and BigDataCloud to see the server location, useful for the explanation phase. Finally, the email link and this additional information are used to fill in two templates of GPT-4o prompts, which allow AntiPhish-LLM to classify the email and generate the explanation. 
 
-The core of the tool is the set of the GPT-4 prompts, thus we devoted particular care to manually designing and iteratively refining them according to the best practices of prompt-engineering [2-4]. Notably, we followed a few-shot prompting approach, as also suggested by OpenAI [4]. The generated explanations follow the structure defined in [5]: “Feature description + Hazard Explanation + Consequences of not complying with the warning”. This structure is grounded on warning theory for the design of warning messages [6]. Moreover, the generated explanations revolve around a set of email features that are valuable for users in making decisions regarding phishing content [5,7] i.e., are:
+The core of the tool is the set of the GPT-4o prompts, thus we devoted particular care to manually designing and iteratively refining them according to the best practices of prompt-engineering [2-4]. Notably, we followed a few-shot prompting approach, as also suggested by OpenAI [4]. The generated explanations follow the structure defined in [5]: “Feature description + Hazard Explanation + Consequences of not complying with the warning”. This structure is grounded on warning theory for the design of warning messages [6]. Moreover, the generated explanations revolve around a set of email features that are valuable for users in making decisions regarding phishing content [5,7] i.e., are:
 
 - (1) Top-Level Domain in the URL is Mispositioned (e.g., as in the URL “www.amazon.com.cz”); 
 - (2) the URL is an IP address; 
@@ -17,11 +17,19 @@ The core of the tool is the set of the GPT-4 prompts, thus we devoted particular
 
 ### Supplementary material
 
-In the file _emails+warnings.zip_ are stored the emails (in .html format) to which users in the study "Can LLMs help protect users from phishing attacks? An exploratory study" were exposed, together with the warnings shown (in .png format). Warnings are named WX.png, where X is the experimental condition (from 1 to 4); emails name include the warning name to match them with the warnings that were shown together.
+In the _Classification evaluation_ folder, there are the files related to the evaluation of the tool with GPT-4o. 
+Specifically, the _results_ subfolder contains:
+- the results and statistical tests of the evaluation process ("predicted_labels", 
+"predicted_probabilities", and "repeated_evaluation"); 
+- the results of the analysis conducted on VirusTotal ("VirusTotal ranges").  
 
-The "_Baseline Comparison - Stat test details.xls_" file contains the results of the statistical comparison performed between our 4 experimental conditions (W1-W4) and the 4 baselines (manual explanation + chrome + edge + firefox).
+In the _Warning evaluation_ folder there are all the files related to the user study conducted to evaluate the warning 
+dialogs produced by AntiPhish-LLM. Specifically: 
+- In the file _emails+warnings.zip_ are stored the emails (in .html format) to which users in the study "Can LLMs help protect users from phishing attacks? An exploratory study" were exposed, together with the warnings shown (in .png format). Warnings are named WX.png, where X is the experimental condition (from 1 to 4); emails name include the warning name to match them with the warnings that were shown together.
 
-The "_Experimental Conditions - Stat details.xlsx_" file contains 2 sheets with: 1) the descriptive statistical details of the 4 experimental conditions (average and standard deviation of W1-W4) and 2) the results of the friedman test comparing the 4 experimental conditions pairwise.
+- The "_Baseline Comparison - Stat test details.xls_" file contains the results of the statistical comparison performed between our 4 experimental conditions (W1-W4) and the 4 baselines (manual explanation + chrome + edge + firefox).
+
+- The "_Experimental Conditions - Stat details.xlsx_" file contains 2 sheets with: 1) the descriptive statistical details of the 4 experimental conditions (average and standard deviation of W1-W4) and 2) the results of the friedman test comparing the 4 experimental conditions pairwise.
 
 ### References
 

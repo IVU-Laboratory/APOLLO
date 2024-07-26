@@ -1,5 +1,3 @@
-import math
-
 import requests
 import base64
 import dns.resolver
@@ -135,17 +133,17 @@ def get_url_info(url_to_analyze, string_out=False):
         return url_info
 
 
-def get_dummy_values(percentile, location, label, false_positive=False):
+def get_simulated_values(percentile, location, label, false_positive=False):
     percentile = 100 if percentile > 100 else percentile  # cap it at 100
     if (label == 1 and not false_positive) or (label == 0 and false_positive):
         # "phishing" case OR "legit" false positive case
         harmless_count = 0
-        undetected_count = math.floor((100-percentile) + percentile * 0.05)
-        malicious_count = math.floor(percentile * 0.95)
+        undetected_count = round((100-percentile) * 0.28)  # RANGE FOR UNDETECTED [0-28] (28,21,14,7,0)
+        malicious_count = round(percentile * 0.25)  # RANGE FOR MALICIOUS : [0-25] (0,6,12,19,25)
     else:  # if (label == 0 and not false_positive) or (label == 1 and false_positive):
         # "legit" case OR "phishing" false positive case
-        harmless_count = math.floor(percentile * 0.75)
-        undetected_count = math.floor(percentile * 0.25 + (100-percentile))
+        harmless_count = round(percentile * 0.87)  # RANGE FOR HARMLESS [0-87] (0,22,43,65,87)
+        undetected_count = round((100-percentile) * 0.28)  # RANGE FOR UNDETECTED [0-28] (28,21,14,7,0)
         malicious_count = 0
     vt_data = {'malicious': malicious_count, 'undetected': undetected_count,
                'harmless': harmless_count}
