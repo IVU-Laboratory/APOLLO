@@ -38,14 +38,16 @@ def classify_email(email_input, feature_to_explain=None, url_info=None, explanat
             the part of the email that makes you say that persuasion principle is being applied;
             a brief rationale for each principle.
         - A list of {explanations_min} to {explanations_max} features that could indicate the danger (or legitimacy) of the email; the explanations must be understandable by users with no cybersecurity or computers expertise.
-
+        {"" if feature_to_explain is None else 
+        "You already know that one of the features that indicates that this email is dangerous is that " 
+        + feature_to_explain["description"]}
 
         Desired format:
         label: <phishing/legit>
         phishing_probability: <0-100%>
-        persuasion_principles: [array of persuation principles, each having: {{name, specific sentences, rationale}} ]
+        persuasion_principles: [array of persuasion principles, each having: {{name, specific sentences, rationale}} ]
         explanation: [array of {explanations_min}-{explanations_max} features explained]'''
-         }
+        }
     ]
     # User input (email)
     headers = str(email_input["headers"])
@@ -81,13 +83,16 @@ def classify_email(email_input, feature_to_explain=None, url_info=None, explanat
         response_format={"type": "json_object"}
     )
     classification_response = response.choices[0].message.content
-
     messages.append({"role": "assistant",
                      "content": f"{classification_response}"})  # attach the response string for the second prompt
 
     # Try getting the JSON object from the response
     try:
+        # remove any non-UTF-8 characters
+        classification_response = classification_response.decode('ascii', 'ignore').encode("ascii")
+        # decode the string into a JSON
         classification_response = json.loads(classification_response)
+        print(classification_response)
     except:
         print("Invalid JSON format in the response")
         return classification_response, ""
