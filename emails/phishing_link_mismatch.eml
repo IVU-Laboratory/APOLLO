@@ -1,0 +1,134 @@
+Delivered-To: alice1994@livemail.it
+Received: by 2002:a17:906:ce28:b0:9d6:6b28:52cf with SMTP id sd8csp242128ejb;
+        Thu, 12 Sep 2024 14:41:45
+Date: Thu, 12 Sep 2024 14:41:45
+From: Facebook <security@facebookmail.com>
+To: alice1994@livemail.it
+Message-ID: <1699357547193.269d1699-f24d-44d2-ab81-406bb57d6caa@21124867m.facebook.com>
+Subject: Your Facebook password has been modified
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_5846169_393279252.1699357600568"
+
+------=_Part_5846169_393279252.1699357600568
+Content-Type: text/html; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www=
+.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns=3D"http://www.w3=
+.org/1999/xhtml" xmlns:o=3D"urn:schemas-microsoft-com:office:office" xmlns:=
+v=3D"urn:schemas-microsoft-com:vml" lang=3D"en"><head>
+
+<body style="margin:0;padding:0;" dir="ltr" bgcolor="#ffffff">
+          <table border="0" cellspacing="0" cellpadding="0" align="center" id="email_table" style="border-collapse:collapse;">
+            <tr>
+              <td id="email_content" style="font-family:Helvetica Neue,Helvetica,Lucida Grande,tahoma,verdana,arial,sans-serif;background:#ffffff;">
+                  <table border="0" cellspacing="0" cellpadding="0" style=" border-collapse:collapse;">
+                    <tr>
+                      <td valign="top" style="padding-right:10px;font-size: 0px;">
+                        <img src="' . asset("/assets/img/email/facebook.png").  '" style="border:0;">
+                      </td>
+                      <td valign="top" style="width:100%;">
+                        <table border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;font-size:14px;color:#3D4452;width:100%;">
+                          <tr>
+                            <td style="font-size:14px;font-family:LucidaGrande,tahoma,verdana,arial,sans-serif;color:#3D4452;padding-bottom:6px;">Hello Alice,</td>
+                          </tr>
+                          <tr>
+                            <td style="font-size:14px;font-family:LucidaGrande,tahoma,verdana,arial,sans-serif;color:#3D4452;padding-top:6px;padding-bottom:6px;">Your Facebook password has been modified on Thursday 12/09/2024 14:43:45
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="font-size:14px;font-family:LucidaGrande,tahoma,verdana,arial,sans-serif;color:#3D4452;padding-top:6px;padding-bottom:6px;">
+                              <table border="0" cellspacing="0" cellpadding="0" style="border-collapse:collapse;margin-top:5px;margin-bottom:5px;">
+                                <tr style="">
+                                  <td style="padding-left: 10px">
+                                    <span style="color:#808080;">Operating System: </span>
+                                    <span style="color:#808080;">Operating System: </span>
+                                  </td>
+                                  <td style="padding-left: 10px">Windows</td>
+                                </tr>
+                                <tr style="">
+                                  <td style="padding-left: 10px">
+                                    <span style="color:#808080;">Browser: </span>
+                                  </td>
+                                  <td style="padding-left: 10px">Chrome</td>
+                                </tr>
+                                <tr style="">
+                                  <td style="padding-left: 10px">
+                                    <span style="color:#808080;">IP Address: </span>
+                                  </td>
+                                  <td style="padding-left: 10px"> 93.40.196.198</td>
+                                </tr>
+                                <tr style="">
+                                  <td style="padding-left: 10px">
+                                    <span style="color:#808080;">Approximate Location: </span>
+                                  </td>
+                                  <td style="padding-left: 10px">Rome, IT</td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="font-size:14px;font-family:LucidaGrande,tahoma,verdana,arial,sans-serif;color:#3D4452;padding-top:6px;padding-bottom:6px;">
+                              <strong>If you performed this action,</strong>  you can ignore this email.
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="font-size:14px;font-family:LucidaGrande,tahoma,verdana,arial,sans-serif;color:#3D4452;padding-top:6px;padding-bottom:6px;">
+                              <strong>If it wasn\'t you,</strong> <br/>
+                              <a href="https://www.facebook.com/hacked/disavow?u=100000125023309&amp;nArdInDS2&amp;lit_IT&amp;ext1548538159" id="phishing_link" style="color:#3b5998;text-decoration:none;">protect your account</a>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="font-size:14px;font-family:LucidaGrande,tahoma,verdana,arial,sans-serif;color:#3D4452;padding-top:6px;padding-bottom:6px;"></td>
+                          </tr>
+                          <tr>
+                            <td style="font-size:14px;font-family:LucidaGrande,tahoma,verdana,arial,sans-serif;color:#3D4452;padding-top:6px;padding-bottom:6px;">Thank you, <br> the Facebook security team</td>
+                          </tr>
+                          <tr>
+                            <td style="font-size:14px;font-family:LucidaGrande,tahoma,verdana,arial,sans-serif;color:#3D4452;padding-top:6px;">&nbsp;</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+              </td>
+              <td width="15" style="display:block;width:15px;">&nbsp;&nbsp;&nbsp;</td>
+            </tr>
+            <tr>
+              <td style="">
+                <table border="0" width="100%" cellspacing="0" cellpadding="0" align=" left" style="border-collapse:collapse;">
+                  <tr style="border-top:solid 1px #e5e5e5;">
+                    <td height="19" style="line-height:19px;">&nbsp;</td>
+                  </tr>
+                   <tr style="align-items: center; display: block">
+                    <td style="font-family:Helvetica Neue,Helvetica,Lucida Grande,tahoma,verdana,arial,sans-serif;font-size:11px;color:#aaaaaa;line-height:16px;"> This email was sent by Facebook. If you do not want to receive this kind of emails from Facebook, <a href="https://www.facebook.com/o.php?k=3DAS3IzEaiunZaSIOZ&amp;u=3D100000125023309&amp;mid=3D57fd6086d799fG5af317edf44dG57fd652037c71G18e" style="color:#3b5998;text-decoration:none;">cancel your subscription</a>. <br>Facebook Ireland Ltd., Attention: Community Operations, 4 Grand Canal Square, Dublin 2, Ireland </td>
+                  </tr>
+                </table>
+              </td>
+              <td width="15" style="display:block;width:15px;">&nbsp;&nbsp;&nbsp;</td>
+            </tr>
+            <tr style="align-items: center; display: block">
+              <td width="15" style="display:block;width:15px;">&nbsp;&nbsp;&nbsp;</td>
+              <td style="">
+                <table border="0" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
+                  <tr>
+                    <td style="font-family:Helvetica Neue,Helvetica,Lucida Grande,tahoma,verdana,arial,sans-serif;font-size:11px;color:#aaaaaa;line-height:16px;">
+                      <span style="font-family:Helvetica Neue,Helvetica,LucidaGrande,tahoma,verdana,arial,sans-serif;font-size:11px;color:#aaaaaa;line-height:16px;">To protect your account, do not forward this email. <a href="https://www.facebook.com/email_forward_notice/?mid=57fd6086d799fG5af317edf44dG57fd652037c71G18e" style="color:#3b5998;text-decoration:none;">Discover more.</a>
+                      </span>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td width="15" style="display:block;width:15px;">&nbsp;&nbsp;&nbsp; </td>
+                </tr>
+            <tr style="">
+              <td height="20" style="line-height:20px;" colspan="3">&nbsp;</td>
+            </tr>
+          </table>
+          </td>
+          </tr>
+          </table>
+</body></html>
+------=_Part_5846169_393279252.1699357600568--
+

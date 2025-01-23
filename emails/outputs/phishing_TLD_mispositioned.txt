@@ -1,0 +1,45 @@
+{
+  "label": "phishing",
+  "phishing_probability": 95,
+  "persuasion_principles": [
+    {
+      "name": "Authority",
+      "specific_sentences": "Best regards, Amazon Customer Service",
+      "rationale": "The email attempts to leverage the authority of Amazon to make the recipient comply with the request."
+    },
+    {
+      "name": "Scarcity",
+      "specific_sentences": "Unless you update your details within 24 hours (since the opening of this email), your account will be officially and permanently disabled",
+      "rationale": "The email creates a sense of urgency by imposing a 24-hour deadline, which pressures the recipient to act quickly without thorough consideration."
+    },
+    {
+      "name": "Fear",
+      "specific_sentences": "your account will be officially and permanently disabled",
+      "rationale": "The email uses the threat of losing access to the account to instill fear and prompt immediate action."
+    }
+  ],
+  "explanation": [
+    {
+      "feature": "Suspicious Sender Address",
+      "explanation": "The email is sent from 'amazon.it@amazonservices.com.cz', which is not a typical Amazon domain. Legitimate emails from Amazon would come from an '@amazon.com' domain."
+    },
+    {
+      "feature": "Urgent Language",
+      "explanation": "The email states that the account will be permanently disabled within 24 hours, creating a false sense of urgency to rush the recipient into action."
+    },
+    {
+      "feature": "Unusual URL",
+      "explanation": "The link provided in the email points to 'amazonservices.com.cz', which is not a standard Amazon URL. The '.com.cz' domain is suspicious and not typically associated with Amazon."
+    },
+    {
+      "feature": "Generic Greeting",
+      "explanation": "The email starts with 'Dear Customer' instead of addressing the recipient by name, which is common in phishing emails."
+    },
+    {
+      "feature": "Threatening Consequences",
+      "explanation": "The email threatens that the account will be permanently disabled, which is a tactic often used in phishing to scare recipients into compliance."
+    }
+  ]
+}
+"The URL uses a top-level domain (.com) as a subdomain (.com.cz). This unusual structure is often used by scammers to trick you. If you click the link and provide your details, you might be giving away your private information to attackers."
+

@@ -1,0 +1,39 @@
+{
+  "label": "phishing",
+  "phishing_probability": 90,
+  "persuasion_principles": [
+    {
+      "name": "Authority",
+      "specific_sentences": "This email was sent by Facebook.",
+      "rationale": "The email claims to be from Facebook, leveraging the authority of a well-known and trusted brand to make the recipient more likely to believe the content."
+    },
+    {
+      "name": "Urgency",
+      "specific_sentences": "If it wasn’t you, protect your account",
+      "rationale": "The email creates a sense of urgency by suggesting immediate action is needed to protect the account, which can prompt hasty decisions without thorough scrutiny."
+    }
+  ],
+  "explanation": [
+    {
+      "feature": "Displayed link vs. actual URL",
+      "explanation": "The link text says 'protect your account' but the actual URL points to 'https://www.facebook.com/hacked/disavow?u0000125023309&amp;nArdInDS2&amp;lit_IT&amp;ext1548538159', which is suspicious and could lead to a phishing site."
+    },
+    {
+      "feature": "Inconsistent details",
+      "explanation": "The email mentions a password change on 'Saturday 17 December 2022', which is an outdated date and does not match the current context."
+    },
+    {
+      "feature": "Suspicious sender email",
+      "explanation": "The sender's email address 'security@facebookmail.com' is not a typical Facebook domain and could be spoofed."
+    },
+    {
+      "feature": "Generic greeting",
+      "explanation": "The email uses a generic greeting 'Hello {user_name}', which is a common tactic in phishing emails to avoid personalizing the message."
+    },
+    {
+      "feature": "Unusual formatting and errors",
+      "explanation": "The email contains unusual formatting and errors, such as repeated 'Operating System' labels and inconsistent spacing, which are often signs of a phishing attempt."
+    }
+  ]
+}
+"Link mismatch: The link text says 'protect your account' but points to a different URL. This could take you to a fake website. You might unknowingly share your private information with attackers."

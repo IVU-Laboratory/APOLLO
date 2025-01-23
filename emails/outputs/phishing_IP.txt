@@ -1,0 +1,41 @@
+{
+  "label": "phishing",
+  "phishing_probability": 95,
+  "persuasion_principles": [
+    {
+      "name": "Authority",
+      "specific_sentences": "Sincerely, Instagram Technical Staff",
+      "rationale": "The email attempts to leverage the authority of Instagram's technical staff to make the recipient trust the message."
+    },
+    {
+      "name": "Urgency",
+      "specific_sentences": "If this wasn’t you, click the link below and reset your password to be safe.",
+      "rationale": "The email creates a sense of urgency by suggesting immediate action to secure the account, which can prompt hasty decisions."
+    }
+  ],
+  "explanation": [
+    {
+      "feature": "Suspicious URL",
+      "explanation": "The email contains a URL that is an IP address (http://92.233.24.33/instagram/login.php). Legitimate companies typically use domain names rather than IP addresses."
+    },
+    {
+      "feature": "Sender Email Address",
+      "explanation": "The sender's email address is 'noreply@lnstagram.com'. The domain 'lnstagram.com' is suspiciously similar to 'instagram.com', which is a common tactic used in phishing to deceive recipients."
+    },
+    {
+      "feature": "Generic Greeting",
+      "explanation": "The email starts with 'Hey user,' instead of addressing the recipient by name. Legitimate companies usually personalize their emails."
+    },
+    {
+      "feature": "Unusual Location",
+      "explanation": "The email mentions a login from 'Nashik, India' which might be unusual for the recipient. Phishing emails often use alarming information to prompt action."
+    },
+    {
+      "feature": "Urgent Call to Action",
+      "explanation": "The email urges the recipient to 'click the link below and reset your password to be safe.' This creates a sense of urgency, which is a common phishing tactic."
+    }
+  ]
+}
+
+
+"The URL in the email is an IP address. This is unusual for legitimate companies and can be a sign of a phishing site. If you click on it, you might unknowingly give away your personal information."

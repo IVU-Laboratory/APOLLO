@@ -1,2 +1,4 @@
 /.env
 /input_files/*
+/evaluation/results/OLD/
+/evaluation/batches/

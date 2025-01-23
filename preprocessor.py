@@ -79,12 +79,17 @@ def preprocessURLS(body):
     return body, urls_list
 
 
-def preprocessURLsPlainText(body):
+def preprocessURLsPlainText(body, truncate_URLs=True):
     urls_list = []
-    # get the initial URL part only [protocol+FQDN(fully qualified domain name)] \g<1> = protocol (+ www.), \g<2> = FQDN
-    body = re.sub(
-        r"(https?:\/\/|www\.)([-a-zA-Z0-9@:%._\-\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6})\b[-a-zA-Z0-9()@:%_+.~#?&\/=\-]*",
-        r"[URL]\g<1>\g<2>[/URL]", body)
+    # if needed truncate the URLs to [protocol+FQDN(fully qualified domain name)] \g<1> = protocol (+ www.), \g<2> = FQDN
+    if truncate_URLs:
+        body = re.sub(
+            r"(https?:\/\/|www\.)([-a-zA-Z0-9@:%._\-\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6})\b[-a-zA-Z0-9()@:%_+.~#?&\/=\-]*",
+            r"[URL]\g<1>\g<2>[/URL]", body)
+    else:
+        body = re.sub(
+            r"(https?:\/\/|www\.)([-a-zA-Z0-9@:%._\-\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6})\b([-a-zA-Z0-9()@:%_+.~#?&\/=\-]*)",
+            r"[URL]\g<1>\g<2>\g<3>[/URL]", body)
     for m in re.finditer(r"\[URL\]([^\[]*)\[/URL\]", body):
         url = m.group(1)
         # clean the URL if something weird happened
