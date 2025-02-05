@@ -1,5 +1,7 @@
 
-APOLLO (Advanced Phishing preventiOn with Large Language model-based Oracle) is a tool written in Python 3.10.12 and powered by GPT-4o ([gpt-4o-2024-13-5]([url](https://platform.openai.com/docs/models/gpt-4o))) to:
+# APOLLO (Advanced Phishing preventiOn with Large Language model-based Oracle)
+
+APOLLO is a tool written in Python 3.10.12 and powered by GPT-4o ([gpt-4o-2024-13-5]([url](https://platform.openai.com/docs/models/gpt-4o))) to:
 
 - **classify** an email as **phishing** or legitimate, and
 - **generate an explanation** for the user in the case of a phishing email.
@@ -21,13 +23,33 @@ The core of the tool is the set of the GPT-4o prompts, thus we devoted particula
 - (3) Mismatch between the displayed and actual link; 
 - (4) the URL points to a very young domain.
 
-### Supplementary material
+# Supplementary material
+
+## Classification evaluation 
 
 In the _Classification evaluation_ folder, there are the files related to the evaluation of the tool with GPT-4o. 
 Specifically, the _results_ subfolder contains:
 - the results and statistical tests of the evaluation process ("predicted_labels", 
 "predicted_probabilities", and "repeated_evaluation"); 
-- the results of the analysis conducted on VirusTotal ("VirusTotal ranges").  
+- the results of the analysis conducted on VirusTotal ("VirusTotal ranges"). 
+
+To reproduce the results, the following steps must be done:
+
+- Be sure that the .env file is correctly included in the root folder and contains the required API keys: copy the 
+_.env.example_ file in a new file named _.env_,  and there set the API keys for the required services: 
+  - OPENAI_API_KEY is the key from OpenAI (https://platform.openai.com/docs/overview), 
+  - (not necessary) VT_API is the key for VirusTotal (https://www.virustotal.com/gui/home/),
+  - DNS_API is the key for BigDataCloud (https://www.bigdatacloud.com/)
+- (Optional) If the datasets must be changed, load your datasets in the _"Classification evaluation/datasets"_ folder; 
+then edit the _"Classification evaluation/dataset_polisher.py"_ script by referring to the updated datasets in the main function. 
+Ensure that your custom datasets respect the required format of the datasets used in this project. 
+- Run the _"Classification evaluation/evaluation.py"_ script - be careful, as it will have a cost on your API credit of OpenAI.  
+You can change the **evaluations** variable to (temporarily or not) exclude some of the 14 rounds of evaluation (consider that, by default,
+_DATASET_LENGTH * num rounds_ evaluations will be performed).
+You are advised to read the [paper](https://arxiv.org/abs/2410.07997) carefully for more details about the data used in the different rounds.
+- Your results will be found in the "_Classification evaluation/results_" folder. Be sure that no previous result is overwritten by the execution. 
+
+## Warning evaluation
 
 In the _Warning evaluation_ folder there are all the files related to the user study conducted to evaluate the warning 
 dialogs produced by APOLLO. Specifically: 
@@ -37,7 +59,13 @@ dialogs produced by APOLLO. Specifically:
 
 - The "_Experimental Conditions - Stat details.xlsx_" file contains 2 sheets with: 1) the descriptive statistical details of the 4 experimental conditions (average and standard deviation of W1-W4) and 2) the results of the friedman test comparing the 4 experimental conditions pairwise.
 
-### References
+
+# Cite this work
+
+G. Desolda, F. Greco, and L. Viganò (2024). _APOLLO: A GPT-based tool to detect phishing emails and generate explanations that warn users._ Preprint: https://arxiv.org/abs/2410.07997
+
+
+# References
 
 [1] Misra, K. and Rayz, J. T. 2022. LMs go Phishing: Adapting Pre-trained Language Models to Detect Phishing Email.
 
