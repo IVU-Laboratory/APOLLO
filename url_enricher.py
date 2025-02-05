@@ -53,7 +53,7 @@ def get_ip_addr(url):
 # VirusTotal
 def get_virustotal_data(url):
     api_base_url = 'https://www.virustotal.com/api/v3/urls/'
-    vt_api_key = os.getenv("VT_API")  # VirusTotal API key - https://www.virustotal.com/gui/home/upload
+    vt_api_key = os.getenv("VT_API")  # VirusTotal API key - https://www.virustotal.com/
     # Headers with the API key
     headers = {
         'x-apikey': vt_api_key,
